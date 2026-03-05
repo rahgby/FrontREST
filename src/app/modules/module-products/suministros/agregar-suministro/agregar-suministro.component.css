@@ -1,0 +1,68 @@
+
+
+/* Contenedor principal */
+mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 19px;
+  }
+  /* Campos de formulario */
+  mat-form-field {
+    width: 100%;
+    padding-top: 10px;
+  }
+  
+  /* Botones */
+  mat-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px;
+  }
+  
+  /* Estilo para los botones */
+  button {
+    min-width: 100px;
+  }
+  
+  /* Color del botón de cancelar */
+  button:first-child {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+  
+  /* Color del botón de guardar */
+  button:last-child {
+    background-color: #1976d2;
+    color: white;
+  }
+  
+  /* Hover para botones */
+  button:hover {
+    opacity: 0.9;
+  }
+  
+  /* Ajustar el título del modal */
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  
+  /* Responsive: Mejorar apariencia en pantallas pequeñas */
+  @media (max-width: 600px) {
+    mat-dialog-content {
+      padding: 12px;
+    }
+  
+    mat-dialog-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    button {
+      width: 100%;
+    }
+  }
+  

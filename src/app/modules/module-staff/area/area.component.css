@@ -1,0 +1,316 @@
+/* --- Reset Global --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* --- Pelota (elemento arrastrable) --- */
+.pelota {
+    width: 40px;
+    height: 40px;
+    background-color: rgb(0, 0, 0);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    user-select: none;
+    touch-action: none;
+    cursor: grab;
+    margin: 3px 0;
+    position: relative;
+}
+
+/* --- Casillas --- */
+.casilla {
+    border: 2px solid #dee2e6;
+    width: 100%;
+    position: relative;
+}
+
+#casilla-superior {
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 20px;
+    border-bottom: 3px solid #ced4da;
+}
+
+#casilla-inferior {
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+/* --- Tabla de áreas --- */
+.tabla {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
+    height: 100%;
+    gap: 20px;
+    padding: 10px;
+}
+
+/* --- Contenedor de área --- */
+.area-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.area-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Header de área --- */
+.area-header {
+    background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    padding: 16px 12px;
+    border-bottom: 2px solid #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.area-icon { margin-right: 8px; font-size: 20px; }
+.area-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+/* --- Columna de área --- */
+.area-columna {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 15px;
+    overflow-y: auto;
+    min-height: 200px;
+    gap: 10px;
+}
+
+/* Scrollbar personalizado */
+.area-columna::-webkit-scrollbar { width: 6px; }
+.area-columna::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+.area-columna::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+.area-columna::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+/* --- Mesa --- */
+.mesa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: background-color 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.mesa:hover {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+.mesa span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+}
+
+.mesa button { margin-left: 10px; }
+
+/* --- Botones --- */
+.boton-agregar-mesa,
+.boton-eliminar-area {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.boton-agregar-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    font-weight: 600;
+    border-radius: 8px;
+    margin: 10px 0;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.boton-agregar-area:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+}
+
+.acciones-areas {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 0 20px;
+}
+
+/* --- Botón enviar a WhatsApp --- */
+.boton-enviar {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: #25D366;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 50px;
+    box-shadow: 0 6px 12px rgba(37, 211, 102, 0.3);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    min-width: 180px;
+}
+
+.boton-enviar:hover {
+    background-color: #128C7E;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(37, 211, 102, 0.4);
+}
+
+.boton-enviar:active { transform: translateY(0); }
+
+/* --- Icono retroceder --- */
+.icono-retroceder {
+    cursor: pointer;
+    color: #495057;
+    margin: 15px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1001;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    padding: 6px;
+    transition: all 0.2s ease;
+}
+
+.icono-retroceder:hover {
+    color: #dc690b;
+    background-color: white;
+    transform: scale(1.1);
+}
+
+/* --- Formulario en modal --- */
+.w-full {
+    width: 100%;
+    margin: 20px 0;
+}
+
+mat-form-field { margin: 15px 0; }
+mat-dialog-actions {
+    padding: 20px 0 10px;
+    gap: 10px;
+}
+mat-dialog-content { padding: 20px 24px !important; }
+
+/* --- Media Queries --- */
+@media (max-width: 1200px) {
+    .tabla {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .tabla {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    #casilla-superior {
+        height: 30%;
+        padding: 15px;
+        gap: 12px;
+    }
+    
+    #casilla-inferior {
+        height: 70%;
+        padding: 15px;
+    }
+    
+    .boton-enviar {
+        right: 15px;
+        bottom: 15px;
+        padding: 12px 20px;
+        min-width: 160px;
+    }
+}
+
+@media (max-width: 480px) {
+    .area-header {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px;
+    }
+    
+    .area-actions {
+        margin-left: 0;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .mesa {
+        padding: 10px 12px;
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+    
+    .mesa button { margin-left: 0; }
+}

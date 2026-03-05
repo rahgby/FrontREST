@@ -1,0 +1,213 @@
+<div class="spinner-overlay" *ngIf="(spinnerService.isLoading$ | async)">
+  <mat-spinner diameter="50"></mat-spinner>
+</div>
+
+<div class="container" [class.blur]="(spinnerService.isLoading$ | async)">
+  
+  <div class="button-container">
+    
+<mat-form-field appearance="outline" class="search-field">
+        <mat-label>Buscar platillo...</mat-label>
+        <input matInput [(ngModel)]="textoBusqueda" (keyup)="onSearch()">
+        <button *ngIf="textoBusqueda" matSuffix mat-icon-button aria-label="Limpiar" (click)="limpiarBusqueda()">
+            <mat-icon>close</mat-icon>
+        </button>
+        <mat-icon matSuffix *ngIf="!textoBusqueda">search</mat-icon>
+    </mat-form-field>
+    
+    <button *ngIf="user?.rol === 'Administrador'" mat-flat-button class="btn-custom btn-primary" (click)="openAddPlatoModal()">
+      <mat-icon>add</mat-icon> Agregar Platillo
+    </button>
+    
+    <button mat-flat-button class="btn-custom btn-accent" (click)="generarPDF()">
+      <mat-icon>picture_as_pdf</mat-icon> Descargar Carta
+    </button>
+
+    <span class="spacer"></span>
+
+    
+    
+    <div class="filter-button">
+      <button mat-stroked-button class="btn-custom btn-outline" [matMenuTriggerFor]="menu">
+        <mat-icon>filter_list</mat-icon> Filtrar
+      </button>
+      
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="filtrarPorSeccion('')">Mostrar todos</button>
+        <button mat-menu-item *ngFor="let seccion of secciones" (click)="filtrarPorSeccion(seccion.nombre)">
+          {{ seccion.nombre }}
+        </button>
+      </mat-menu>
+    </div>
+
+  </div>
+
+  <ng-container *ngFor="let seccion of seccionesFiltradas">
+    
+    <div class="seccion" *ngIf="getPlatosPorSeccion(seccion.nombre).length > 0">
+        
+        <div class="seccion-header">
+        <h2>{{ seccion.nombre }}</h2>
+        <button mat-icon-button (click)="toggleSeccion(seccion.nombre)">
+            <mat-icon>{{ seccionVisible[seccion.nombre] ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
+        </div>
+
+        <div class="platos-list" *ngIf="seccionVisible[seccion.nombre]">
+        <mat-card *ngFor="let plato of getPlatosPorSeccion(seccion.nombre); let i = index" class="plato-card">
+            <img mat-card-image [src]="plato.imgRuta" alt="Imagen del platillo">
+            <mat-card-content>
+            <h2>{{ plato.nombre }}</h2>
+            <p>{{ plato.descripcion }}</p>
+            <p>Stock: {{ plato.stock }}</p>
+            </mat-card-content>
+            
+            <div class="precio-container">
+            <p class="precio"><strong>Precio:</strong> S/ {{ plato.precio | number:'1.2-2' }}</p>
+            </div>
+            
+            <div *ngIf="user?.rol === 'Administrador'" class="estado-container">
+            <mat-slide-toggle [checked]="plato.stock > 0" (change)="cambiarEstado(plato)" class="custom-slide-toggle">
+                {{ plato.stock ? 'Disponible' : 'Inactivo' }}
+            </mat-slide-toggle>
+            </div>
+            
+            <mat-card-actions>
+            <button *ngIf="user?.rol === 'Administrador'" mat-icon-button color="primary" (click)="openEditPlatoModal(plato, i)">
+                <mat-icon>edit</mat-icon>
+            </button>
+            <button *ngIf="user?.rol === 'Administrador'" mat-icon-button color="warn" (click)="deletePlato(plato)">
+                <mat-icon>delete</mat-icon>
+            </button>
+            </mat-card-actions>
+        </mat-card>
+        </div>
+    </div>
+  </ng-container>
+
+  <div *ngIf="showModalCategoria" class="modal-overlay"> ... </div>
+  <div *ngIf="showModal" class="modal-overlay"> ... </div>
+
+
+
+  <!-- ========== MODAL PARA CREAR CATEGORÍA ========== -->
+  <div *ngIf="showModalCategoria" class="modal-overlay">
+    <div class="modal-content categoria-modal">
+      <h2 class="titulomodal">Nueva Categoría</h2>
+      <form (ngSubmit)="guardarCategoria()" #categoriaForm="ngForm">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Nombre de la Categoría</mat-label>
+          <input
+            matInput
+            name="nombreCategoria"
+            [(ngModel)]="nuevaCategoria.nombre"
+            required
+            minlength="3"
+            #nombreCategoria="ngModel"
+          />
+          <mat-error *ngIf="nombreCategoria.invalid && (nombreCategoria.dirty || nombreCategoria.touched)">
+            El nombre es obligatorio y debe tener al menos 3 caracteres.
+          </mat-error>
+        </mat-form-field>
+
+        <div class="modal-actions">
+          <button mat-button type="button" (click)="cerrarModalCategoria()">Cancelar</button>
+          <button
+            mat-button
+            type="submit"
+            color="primary"
+            [disabled]="categoriaForm.invalid || guardandoCategoria"
+          >
+            <span *ngIf="!guardandoCategoria">Crear Categoría</span>
+            <span *ngIf="guardandoCategoria">Creando...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========== MODAL PARA AGREGAR/EDITAR PLATILLO ========== -->
+  <div *ngIf="showModal" class="modal-overlay">
+  <div class="modal-content custom-modal-content">
+    
+    <h2 class="titulomodal">{{ indiceEditando !== null ? 'Editar Platillo' : 'Agregar Platillo' }}</h2>
+    
+    <form (ngSubmit)="guardarPlato()" #platoForm="ngForm">
+      
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre</mat-label>
+        <input matInput name="nombre" [(ngModel)]="platoEditando.nombre" required minlength="3" #nombre="ngModel" />
+        <mat-error *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+          El nombre es obligatorio (min 3 caracteres).
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Imagen URL</mat-label>
+        <input matInput name="imagen" [(ngModel)]="platoEditando.imgRuta" required #imagen="ngModel" />
+        <mat-error *ngIf="imagen.invalid && (imagen.dirty || imagen.touched)">
+          La URL es obligatoria.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput name="descripcion" [(ngModel)]="platoEditando.descripcion" required minlength="10" #descripcion="ngModel"></textarea>
+        <mat-error *ngIf="descripcion.invalid && (descripcion.dirty || descripcion.touched)">
+          Mínimo 10 caracteres.
+        </mat-error>
+      </mat-form-field>
+
+      <div class="row-inputs">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Stock</mat-label>
+          <input matInput type="number" name="stock" [(ngModel)]="platoEditando.stock" required min="0" #stock="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Precio (S/)</mat-label>
+          <input matInput type="number" name="precio" [(ngModel)]="platoEditando.precio" required min="0" #precio="ngModel" />
+        </mat-form-field>
+      </div>
+
+      <div class="seccion-row">
+        <mat-form-field appearance="outline" class="seccion-select">
+          <mat-label>Sección</mat-label>
+          <mat-select name="seccion" [(ngModel)]="platoEditando.idCategoria" required>
+            <mat-option *ngFor="let seccion of secciones" [value]="seccion.idCategoria">
+              {{ seccion.nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <button mat-raised-button type="button" (click)="abrirModalNuevaCategoria()" class="btn-nueva-categoria">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <div class="extras-section">
+        <h3>Extras Disponibles</h3>
+        <div class="extras-grid">
+          <div *ngFor="let extra of extras">
+            <mat-checkbox 
+              [value]="extra.idAdicional" 
+              (change)="onExtraChange($event, extra.idAdicional)"
+              [checked]="isExtraSelected(extra.idAdicional)"
+              color="primary">
+              {{ extra.nombre }}
+            </mat-checkbox>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+        <button mat-flat-button type="submit" class="btn-guardar" [disabled]="platoForm.invalid || guardando">
+          <span *ngIf="!guardando">Guardar</span>
+          <span *ngIf="guardando">Guardando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>

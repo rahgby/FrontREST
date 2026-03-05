@@ -1,0 +1,147 @@
+<div class="mesas-view-container">
+
+  <h2 class="titulo">Crear pedido</h2>
+
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb custom-breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/pedidos" class="d-flex align-items-center gap-1">
+          <mat-icon class="breadcrumb-icon">home</mat-icon>
+          <span>Inicio</span>
+        </a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/pedidos">Pedidos</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Crear pedido
+      </li>
+    </ol>
+  </nav>
+
+  <div class="card main-layout-card" *ngIf="isLoadingCaja || !cajaAbierta">
+    <div class="card-body">
+      <div *ngIf="isLoadingCaja" class="text-center py-5">
+        <mat-spinner diameter="50" style="margin: 0 auto;"></mat-spinner>
+        <p class="mt-2">Verificando estado de caja...</p>
+      </div>
+      <div *ngIf="!isLoadingCaja && !cajaAbierta" class="text-center py-5 text-muted">
+        <mat-icon style="font-size:48px">lock</mat-icon>
+        <p class="mt-2 mb-0">Caja cerrada. No se pueden mostrar Mesas.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card main-layout-card" *ngIf="cajaAbierta">
+    <div class="card-body">
+
+      <div class="union-info-bar" *ngIf="isUnionMode">
+        <div class="info-text">
+          <mat-icon>link</mat-icon>
+          <span *ngIf="!selectedMesaMadre">Selecciona la mesa <strong>Principal</strong></span>
+          <span *ngIf="selectedMesaMadre">Uniendo a: <strong>{{selectedMesaMadre.nombre}}</strong>
+            ({{selectedMesasHijas.length}} seleccionadas)</span>
+        </div>
+        <div class="actions">
+          <button mat-button (click)="cancelarUnion()">CANCELAR</button>
+          <button mat-raised-button color="primary" [disabled]="!selectedMesaMadre || selectedMesasHijas.length === 0"
+            (click)="confirmarUnion()">
+            CONFIRMAR UNIÓN
+          </button>
+        </div>
+      </div>
+
+      <div class="text-center py-5 text-muted" *ngIf="!isLoadingAreas && areas.length === 0">
+        <mat-icon style="font-size:48px; height: 48px; width: 48px;">domain_disabled</mat-icon>
+        <p class="mt-2 mb-0">No tienes áreas asignadas. Contacta al administrador.</p>
+      </div>
+
+      <ng-container *ngIf="areas.length > 0">
+        <div class="search-section">
+          <mat-form-field appearance="outline" class="custom-search-field">
+            <mat-icon matPrefix>search</mat-icon>
+            <mat-label>Buscar mesa...</mat-label>
+            <input matInput [(ngModel)]="busqueda" (ngModelChange)="onBusquedaChange()">
+          </mat-form-field>
+        </div>
+
+        <div class="navigation-section">
+          <mat-tab-group *ngIf="!isLoadingAreas" [(selectedIndex)]="selectedAreaIndex"
+            (selectedIndexChange)="seleccionarArea($event)" headerPosition="below" class="custom-tabs">
+            <mat-tab *ngIf="areas.length > 1" label="Todos"></mat-tab>
+            <mat-tab *ngFor="let area of areas" [label]="area.nombre"></mat-tab>
+          </mat-tab-group>
+          <mat-progress-bar mode="indeterminate" *ngIf="isLoadingAreas || isLoadingMesas"></mat-progress-bar>
+        </div>
+      </ng-container>
+
+      <div *ngIf="!isLoadingMesas" class="mesas-grid-professional">
+
+        <div class="text-center py-5 text-muted" style="grid-column: 1 / -1;"
+          *ngIf="mesasFiltradas.length === 0 && !isLoadingMesas">
+          <mat-icon style="font-size:48px; height: 48px; width: 48px;">info_outline</mat-icon>
+          <p class="mt-2 mb-0">No se encontraron mesas en esta sección.</p>
+        </div>
+
+        <mat-card *ngFor="let mesa of mesasFiltradas" 
+          [matMenuTriggerFor]="mesa.isMesaUnion && !isUnionMode ? menuOpciones : null"
+          (click)="!mesa.isMesaUnion || isUnionMode ? seleccionarMesa(mesa) : null"
+          [class.is-selected]="mesa === mesaSeleccionada" 
+          [class.is-locked]="!mesa.habilitado && !mesa.esDelUsuario"
+          [class.is-busy]="!mesa.habilitado" 
+          [class.union-master]="selectedMesaMadre?.idMesa === mesa.idMesa"
+          [class.union-child-selected]="selectedMesasHijas.includes(mesa.idMesa)" 
+          class="mesa-card-root">
+
+          <mat-menu #menuOpciones="matMenu">
+            <button mat-menu-item (click)="seleccionarMesa(mesa)">
+              <mat-icon color="primary">restaurant</mat-icon>
+              <span>Ver Pedido / Carta</span>
+            </button>
+            <button mat-menu-item (click)="separarMesa(mesa, $event)">
+              <mat-icon color="warn">call_split</mat-icon>
+              <span>Desunir este grupo</span>
+            </button>
+          </mat-menu>
+
+          <mat-card-content class="mesa-card-body">
+
+            <div class="union-badge" *ngIf="mesa.isMesaUnion">
+              <mat-icon>link</mat-icon>
+            </div>
+
+            <div class="status-indicator-box">
+              <mat-icon>{{ mesa.isMesaUnion ? 'group_work' : 'table_restaurant' }}</mat-icon>
+            </div>
+
+            <div class="mesa-details">
+              <span class="mesa-title">{{ mesa.nombre }}</span>
+              <span class="user-badge" *ngIf="mesa.esDelUsuario">(Tu mesa)</span>
+              <span class="mesa-area">{{ mesa.area }}</span>
+            </div>
+
+            <div class="mesa-status-tag">
+              <span class="dot" [class.dot-online]="mesa.habilitado"></span>
+              <span class="status-text">
+                {{ mesa.habilitado ? 'Disponible' : 'Ocupada' }}
+              </span>
+            </div>
+
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="footer-container">
+        <button mat-flat-button [color]="isUnionMode ? 'warn' : 'primary'" class="btn-unir" (click)="unirMesas()">
+          <mat-icon>{{ isUnionMode ? 'close' : 'call_merge' }}</mat-icon>
+          {{ isUnionMode ? 'Cancelar Selección' : 'Unir Mesas' }}
+        </button>
+
+        <mat-paginator [length]="totalCount" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+          (page)="onPageChange($event)" class="refined-paginator">
+        </mat-paginator>
+      </div>
+
+    </div>
+  </div>
+</div>

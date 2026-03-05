@@ -1,0 +1,94 @@
+mat-toolbar{
+    position:fixed;
+    top:0;
+    z-index: 2;
+    background-color: #171717; 
+    color: white;
+  }
+
+  .nav-toolbar {
+    display: flex;
+    justify-content: flex-start; 
+    align-items: center;
+    padding: 0 16px;
+  }
+  
+  .maintoolbar{
+    display: flex;
+    width: 100%;
+    align-items: center;
+  }
+
+  .mainheader-container {
+    display: flex;
+    justify-content: left;
+    flex-grow: 1;  
+}
+
+.usuario {
+  display: flex;
+  justify-content:right;
+  flex-grow: 1;  
+}
+
+.section-title {
+  font-size: 14px;
+  
+  color: orange;
+  padding: 10px 16px;
+  display: block;
+}
+
+.mat-list-item {
+  padding-left: 16px; 
+}
+
+.submenu {
+  padding-left: 40px; 
+  background-color: #f5f5f5; 
+  overflow: hidden;
+  max-height: 0; 
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out, transform 0.3s ease-out; 
+}
+
+.submenu.open {
+  opacity: 1;
+  transform: scaleY(1); 
+  max-height: 200px; 
+}
+
+.submenu .mat-list-item {
+  padding-left: 40px; 
+}
+
+.mat-list-item .mat-icon {
+  margin-right: 8px; 
+}
+mat-sidenav-container {
+    height:100%;
+}
+
+h2 {padding: 1rem;}
+
+mat-sidenav-content{
+    padding-top: 3.5rem;
+    @media screen and (min-width: 600px) {
+        padding-top: 4rem;
+    }
+}
+
+mat-sidenav {
+    width: 250px; 
+    overflow: hidden;
+    padding-top: 3.5rem;
+    @media screen and (min-width: 600px) {
+      padding-top: 4rem;
+    }
+
+    .entry{
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding:0.75rem;
+    }
+  }

@@ -1,0 +1,271 @@
+<div class="modal-container">
+
+    <div class="modal-header">
+        <div class="header-title">
+            <button mat-icon-button *ngIf="pasoActual === 'SELECCION_PAGO'" (click)="volverAlResumen()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+
+            <h2 mat-dialog-title>
+                <span *ngIf="pasoActual === 'RESUMEN'">Cuenta: {{ data.nombreMesa }}</span>
+                <span *ngIf="pasoActual === 'SELECCION_PAGO'">Método de Pago</span>
+            </h2>
+        </div>
+
+        <button mat-icon-button (click)="cerrar()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <ng-container *ngIf="pasoActual === 'RESUMEN'">
+
+        <mat-dialog-content class="content-scroll">
+
+            <div *ngIf="isLoading" class="loading-box">
+                <mat-spinner diameter="40"></mat-spinner>
+                <p>Calculando cuenta...</p>
+            </div>
+
+            <div *ngIf="!isLoading && mensajeVacio" class="mensaje-centro">
+                <mat-icon class="icono-gigante">assignment_turned_in</mat-icon>
+                <h3>{{ mensajeVacio }}</h3>
+                <button mat-button color="primary" (click)="cerrar()">Cerrar</button>
+            </div>
+
+            <div *ngIf="!isLoading && cuenta && !mensajeVacio">
+
+                <div *ngIf="cuenta.tienePedidosEnCocina" class="alert-banner warning">
+                    <mat-icon>warning_amber</mat-icon>
+                    <div class="alert-text">
+                        <strong>¡Atención!</strong>
+                        <p>{{ cuenta.mensajeAlerta }}</p>
+                    </div>
+                </div>
+
+                <div class="pedidos-list">
+
+                    <div *ngFor="let pedido of cuenta.pedidos" class="pedido-card">
+
+                        <div class="pedido-header">
+
+                            <div class="pedido-left">
+                              <span class="idPedido">
+                                #{{pedido.idPedido}}
+                              </span>
+                          
+                              <span class="cliente-name">
+                                <mat-icon class="tiny-icon">person</mat-icon>
+                                {{ pedido.nombreCliente }}
+                          
+                                <span *ngIf="pedido.esAdicional" class="badge-adicional">
+                                  Adicional
+                                </span>
+                              </span>
+                            </div>
+                          
+                            <span *ngIf="pedido.estado !== 'ENVIADO'"
+                                  class="pedido-status"
+                                  [ngClass]="pedido.estado">
+                              {{ pedido.estado }}
+                            </span>
+                          
+                            <span *ngIf="pedido.estado === 'ENVIADO'"
+                                  class="pedido-status"
+                                  [ngClass]="pedido.estado">
+                              EN COCINA
+                            </span>
+                          
+                          </div>
+
+                        <mat-divider></mat-divider>
+
+                        <div class="items-list">
+                            <div *ngFor="let item of pedido.items" class="item-row">
+
+                                <div class="item-main">
+                                    <span class="qty">{{ item.cantidad }}x</span>
+                                    <span class="name">{{ item.plato }}</span>
+                                    <span class="price">{{ item.subtotal | currency:'S/ ' }}</span>
+                                </div>
+
+                                <div class="item-modifiers" *ngIf="item.sabor || item.tipoPapas || item.comentario">
+                                    <div *ngIf="item.sabor">• Sabor: {{ item.sabor }}</div>
+                                    <div *ngIf="item.tipoPapas">• Papas: {{ item.tipoPapas }}</div>
+                                    <div *ngIf="item.comentario" class="nota">"{{ item.comentario }}"</div>
+                                </div>
+
+                                <div class="item-extras" *ngFor="let extra of item.detallePedidoAdicional">
+                                    <span class="extra-name">+ {{ extra.cantidad }} {{ extra.adicional || 'Extra'
+                                        }}</span>
+                                    <span class="extra-price">{{ (extra.precio * extra.cantidad) | currency:'S/ '
+                                        }}</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </mat-dialog-content>
+
+        <div class="footer-moderno" *ngIf="!isLoading && cuenta">
+            <div class="total-big">
+                <small>Total a Pagar</small>
+                <span>{{ cuenta.totalGeneral | currency:'S/ ' }}</span>
+            </div>
+
+            <button class="btn-mega-cobrar" [disabled]="cuenta.tienePedidosEnCocina" (click)="irAPagar()">
+                <span>COBRAR AHORA</span>
+                <mat-icon>chevron_right</mat-icon>
+            </button>
+        </div>
+
+    </ng-container>
+
+
+    <ng-container *ngIf="pasoActual === 'SELECCION_PAGO'">
+
+        <mat-dialog-content class="pago-content">
+            <div class="grid-pagos">
+                <button class="btn-metodo efectivo" (click)="seleccionarMetodoUnico('EFECTIVO')">
+                    <mat-icon>payments</mat-icon>
+                    <span>Efectivo</span>
+                </button>
+                <button class="btn-metodo tarjeta" (click)="seleccionarMetodoUnico('TARJETA')">
+                    <mat-icon>credit_card</mat-icon>
+                    <span>Tarjeta</span>
+                </button>
+                <button class="btn-metodo yape" (click)="seleccionarMetodoUnico('YAPE')">
+                    <mat-icon>qr_code_2</mat-icon>
+                    <span>Yape</span>
+                </button>
+                <button class="btn-metodo plin" (click)="seleccionarMetodoUnico('PLIN')">
+                    <mat-icon>chat_bubble</mat-icon>
+                    <span>Plin</span>
+                </button>
+            </div>
+    
+            <mat-divider class="divider-spacing"></mat-divider>
+    
+            <h3 class="titulo-seccion">Desglose de Pago (Mixto)</h3>
+    
+            <div class="form-mixto">
+                <mat-form-field appearance="outline" class="input-pago">
+                    <mat-label>Efectivo</mat-label>
+                    <span matPrefix>S/&nbsp;</span>
+                    <input matInput type="number" [(ngModel)]="pago.efectivo" min="0" (ngModelChange)="checkValid()">
+                </mat-form-field>
+    
+                <mat-form-field appearance="outline" class="input-pago">
+                    <mat-label>Tarjeta</mat-label>
+                    <span matPrefix>S/&nbsp;</span>
+                    <input matInput type="number" [(ngModel)]="pago.tarjeta" min="0" (ngModelChange)="checkValid()">
+                </mat-form-field>
+    
+                <mat-form-field appearance="outline" class="input-pago">
+                    <mat-label>Yape</mat-label>
+                    <span matPrefix>S/&nbsp;</span>
+                    <input matInput type="number" [(ngModel)]="pago.yape" min="0" (ngModelChange)="checkValid()">
+                </mat-form-field>
+    
+                <mat-form-field appearance="outline" class="input-pago">
+                    <mat-label>Plin</mat-label>
+                    <span matPrefix>S/&nbsp;</span>
+                    <input matInput type="number" [(ngModel)]="pago.plin" min="0" (ngModelChange)="checkValid()">
+                </mat-form-field>
+            </div>
+    
+            <div class="saldo-feedback" [ngClass]="validarEstadoSaldo()">
+                <ng-container *ngIf="faltante > 0.1">
+                    <mat-icon>remove_circle</mat-icon>
+                    Falta: {{ faltante | currency:'S/ ' }}
+                </ng-container>
+    
+                <ng-container *ngIf="faltante < -0.1">
+                    <mat-icon>change_circle</mat-icon>
+                    Sobra: {{ (faltante * -1) | currency:'S/ ' }}
+                </ng-container>
+    
+                <ng-container *ngIf="Math.abs(faltante) <= 0.1">
+                    <mat-icon>check_circle</mat-icon>
+                    ¡Monto Completo!
+                </ng-container>
+            </div>
+                            <mat-divider class="divider-spacing"></mat-divider>
+
+            <div class="resumen-ajustes-container">
+                <div class="resumen-matematico">
+                    <div class="math-row">
+                        <span class="label">Subtotal:</span>
+                        <span class="value">{{ cuenta?.totalGeneral | currency:'S/ ' }}</span>
+                    </div>
+                    <div class="math-row text-danger" *ngIf="montoDescuento > 0">
+                        <span class="label">Descuento:</span>
+                        <span class="value">- {{ montoDescuento | currency:'S/ ' }}</span>
+                    </div>
+                    <div class="math-row text-info" *ngIf="montoDelivery > 0">
+                        <span class="label">Delivery:</span>
+                        <span class="value">+ {{ montoDelivery | currency:'S/ ' }}</span>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="math-row total-row">
+                        <span class="label">Total a Pagar:</span>
+                        <span class="value">{{ totalCalculado | currency:'S/ ' }}</span>
+                    </div>
+                </div>
+
+                <div class="ajustes-inputs">
+                    <mat-form-field appearance="outline" class="input-compacto">
+                        <mat-label>Descuento</mat-label>
+                        <span matPrefix>- S/&nbsp;</span>
+                        <input matInput type="number" [(ngModel)]="montoDescuento" min="0" (ngModelChange)="resetearPagos()">
+                    </mat-form-field>
+            
+                    <mat-form-field *ngIf="data.isDelivery" appearance="outline" class="input-compacto">
+                        <mat-label>Delivery</mat-label>
+                        <span matPrefix>+ S/&nbsp;</span>
+                        <input matInput type="number" [(ngModel)]="montoDelivery" min="0" (ngModelChange)="resetearPagos()">
+                    </mat-form-field>
+                </div>
+            
+                
+            
+            </div>
+            
+            <ng-container *ngIf="!data.isDelivery">
+
+                <mat-divider class="divider-spacing"></mat-divider>
+
+                <h3 class="titulo-seccion">
+                    <mat-icon style="vertical-align: middle; margin-right: 8px;">volunteer_activism</mat-icon>
+                    Propina (Opcional)
+                </h3>
+        
+                <mat-form-field appearance="outline" class="input-pago" style="width: 100%;">
+                    <mat-label>Monto de Propina</mat-label>
+                    <span matPrefix>S/&nbsp;</span>
+                    <input matInput type="number" [(ngModel)]="montoPropina" min="0" step="0.5">
+                    <mat-hint>Este monto será asignado al mesero y no suma a la cuenta</mat-hint>
+                </mat-form-field>
+
+
+            </ng-container>
+    
+            
+    
+    
+        </mat-dialog-content>
+    
+        <div class="footer-moderno">
+            <button class="btn-mega-cobrar confirmar" 
+                    [disabled]="Math.abs(faltante) > 0.1 || isLoading"
+                    (click)="finalizarCobro()">
+                CONFIRMAR PAGO
+                <mat-icon>check</mat-icon>
+            </button>
+        </div>
+    
+      </ng-container>
+
+</div>

@@ -1,0 +1,118 @@
+<div class="modal-container">
+
+    <div class="modal-header">
+      <div class="header-info">
+        <h2 class="mesa-title">
+          <mat-icon>{{ listaPedidos[0]?.mesa ? 'restaurant' : 'two_wheeler' }}</mat-icon>
+          {{ listaPedidos[0]?.mesa || 'Delivery' }}
+        </h2>
+        <span class="fecha-registro">
+          Pedido creado: {{ listaPedidos[0]?.fechaRegistro | date:'medium' }}
+        </span>
+      </div>
+  
+
+      
+      <button mat-icon-button (click)="cerrar()" class="close-btn">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  
+    <div class="modal-body">
+      
+      <div *ngIf="isLoading" class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando comandas...</p>
+      </div>
+  
+      <div *ngIf="!isLoading && listaPedidos.length === 0" class="empty-state">
+        <p>No se encontraron detalles para esta venta.</p>
+      </div>
+  
+      <div *ngFor="let pedido of listaPedidos" class="pedido-block">
+        
+        <div class="pedido-meta">
+          <span class="badge-nro">#{{ pedido.idPedido }}</span>
+          <span class="meta-user"><mat-icon class="tiny-icon">person</mat-icon> {{ pedido.usuario }}</span>
+
+          <span *ngIf="pedido.isDelivery" class="meta-client" matTooltip="Cliente Delivery">
+            <mat-icon class="tiny-icon">account_circle</mat-icon> 
+            {{ pedido.nombreCliente || 'Cliente' }}
+          </span>
+
+          <span class="meta-status" [class.anulado]="!pedido.estado">{{ pedido.estadoPedido }}</span>
+          <span class="meta-time">{{ pedido.fechaRegistro | date:'shortTime' }}</span>
+        </div>
+  
+        <div class="detalles-list">
+          <div *ngFor="let det of pedido.detallePedido" class="detalle-item">
+            
+            <div class="item-row">
+              <div class="qty">{{ det.cantidad }}</div>
+              <div class="desc">
+                <span class="plato-name">{{ det.plato }}</span>
+                <span *ngIf="det.sabor" class="sabor-tag">({{ det.sabor }})</span>
+                <span *ngIf="det.promocion" class="promo-tag">{{ det.promocion }}</span>
+              </div>
+              <div class="price">S/ {{ det.subtotal | number:'1.2-2' }}</div>
+            </div>
+  
+            <div *ngIf="det.comentario" class="item-meta comentario">
+              <mat-icon>edit_note</mat-icon> {{ det.comentario }}
+            </div>
+  
+            <div *ngIf="det.detallePedidoAdicional && det.detallePedidoAdicional.length > 0" class="adicionales-container">
+              <div *ngFor="let adi of det.detallePedidoAdicional" class="adicional-row">
+                <span class="adi-qty">+{{ adi.cantidad }}</span>
+                <span class="adi-name">{{ adi.adicional }}</span>
+                <span class="adi-price">S/ {{ (adi.precio * adi.cantidad) | number:'1.2-2' }}</span>
+              </div>
+            </div>
+  
+          </div>
+        </div>
+        
+        <div class="pedido-divider"></div>
+      </div>
+
+      <div class="resumen-economico" *ngIf="!isLoading && listaPedidos.length > 0">
+    
+        <div class="resumen-row">
+            <span class="label">Subtotal Consumo</span>
+            <span class="value">S/ {{ (data.total - (data.delivery || 0) + (data.descuento || 0)) | number:'1.2-2' }}</span>
+        </div>
+    
+        <div class="resumen-row" *ngIf="data.delivery > 0">
+            <span class="label">
+                <mat-icon class="tiny-icon">two_wheeler</mat-icon> Delivery
+            </span>
+            <span class="value">+ S/ {{ data.delivery | number:'1.2-2' }}</span>
+        </div>
+    
+        <div class="resumen-row descuento" *ngIf="data.descuento > 0">
+            <span class="label">
+                <mat-icon class="tiny-icon">local_offer</mat-icon> Descuento
+            </span>
+            <span class="value">- S/ {{ data.descuento | number:'1.2-2' }}</span>
+        </div>
+    
+        <div class="resumen-divider"></div>
+    
+        <div class="resumen-row total">
+            <span class="label">Total Final</span>
+            <span class="value">S/ {{ data.total | number:'1.2-2' }}</span>
+        </div>
+    
+    </div>
+
+
+
+      
+  
+    </div>
+    
+    <div class="modal-footer">
+      <button mat-stroked-button color="primary" (click)="cerrar()">Cerrar Vista</button>
+    </div>
+  
+  </div>

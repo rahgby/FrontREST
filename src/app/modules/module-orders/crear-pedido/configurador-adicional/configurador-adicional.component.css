@@ -1,0 +1,92 @@
+/* Título del Modal */
+.custom-modal-title {
+  background: #f8fafc;
+  margin: 0 !important;
+  padding: 20px !important;
+  font-size: 1.2rem !important;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.configurador-container {
+  padding: 20px !important;
+  background-color: #f1f5f9;
+}
+
+/* Card de la Instancia (Contenedor blanco) */
+.instancia-card-wrapper {
+  background: white;
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.instancia-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #4338ca;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+/* Grid de Adicionales */
+.adicionales-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* Item Adicional (Mini Card) */
+.adicional-item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.adicional-item-card:hover {
+  background: #f8fafc;
+}
+
+.adi-nombre {
+  display: block;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.adi-precio {
+  font-size: 0.85rem;
+  color: #a56e00;
+}
+
+/* Tu Switch escalado ligeramente para el modal */
+.scale-90 {
+  transform: scale(0.9);
+}
+
+.active-text {
+  color: #4338ca !important;
+  font-weight: 800;
+}
+
+/* Botón de Confirmar Modal (Siguiendo tu estilo degradado) */
+.btn-confirmar-modal {
+  background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%) !important;
+  color: white !important;
+  border-radius: 12px !important;
+  padding: 0 24px !important;
+  height: 44px !important;
+  font-weight: 600 !important;
+}
+
+.btn-cancelar {
+  color: #64748b !important;
+}

@@ -1,0 +1,22 @@
+<!-- dialogo-monto-inicial.component.html -->
+<h2 mat-dialog-title>Monto Inicial de Caja</h2>
+<mat-dialog-content>
+  <form [formGroup]="montoForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Monto Inicial (S/)</mat-label>
+      <input matInput type="number" formControlName="montoInicial" required>
+      <mat-error *ngIf="montoForm.get('montoInicial')?.hasError('required')">
+        Este campo es requerido
+      </mat-error>
+      <mat-error *ngIf="montoForm.get('montoInicial')?.hasError('min')">
+        El monto debe ser positivo
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!montoForm.valid">
+    Aceptar
+  </button>
+</mat-dialog-actions>

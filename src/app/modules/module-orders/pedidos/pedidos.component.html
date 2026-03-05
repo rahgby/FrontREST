@@ -1,0 +1,353 @@
+<div class="contenedor-principal">
+  <!-- Header solo con título -->
+  <h2 class="titulo-pedido">{{ rolUsuario === 'Mesero' ? 'Mis Pedidos' : 'Gestión de Pedidos' }}</h2>
+
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb custom-breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/pedidos" class="d-flex align-items-center gap-1">
+          <mat-icon class="breadcrumb-icon">home</mat-icon>
+          <span>Inicio</span>
+        </a>
+      </li>
+
+      <li class="breadcrumb-item">
+        <a routerLink="/pedidos">Pedidos</a>
+      </li>
+
+      <li class="breadcrumb-item active" aria-current="page">
+        Órdenes
+      </li>
+      <li *ngIf="esCocina()" class="breadcrumb-item">
+        <a routerLink="/pages/orders/pedido-cocina">Cocina</a>
+      </li>
+    </ol>
+
+
+  </nav>
+
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3">
+
+      <div class="fila-buscar">
+        <mat-form-field appearance="outline" class="campo-buscar">
+          <mat-icon matPrefix>search</mat-icon>
+          <mat-label>Buscar pedido...</mat-label>
+          <input matInput #inputBusqueda placeholder="Cliente o N° orden">
+        </mat-form-field>
+
+        <button mat-raised-button class="action-button primary btn-buscar "
+          (click)="buscarPedidos(inputBusqueda.value)">
+          <mat-icon>search</mat-icon>
+          <span class="texto-boton">Buscar</span>
+        </button>
+      </div>
+
+      <!-- FILA ORDENAR -->
+      <div class="fila-ordenar">
+        <div class="btn-group">
+          <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+            <mat-icon class="me-1">sort</mat-icon>
+            Ordenar
+          </button>
+
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" (click)="cambiarOrden('updated')">Últ. actualización</a></li>
+            <li><a class="dropdown-item" (click)="cambiarOrden('hour')">Hora</a></li>
+            <li><a class="dropdown-item" (click)="cambiarOrden('amount_desc')">Monto ↓</a></li>
+            <li><a class="dropdown-item" (click)="cambiarOrden('amount_asc')">Monto ↑</a></li>
+          </ul>
+        </div>
+
+
+      </div>
+
+
+      <!-- Tabs para los estados -->
+      <mat-tab-group #tabGroup (selectedTabChange)="onTabChange($event)" class="custom-tabs">
+
+
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <div class="tab-label-wrapper">
+              <span>Enviado</span>
+              <span class="badge-dot" *ngIf="novedadesPorEstado['ENVIADO'] > 0"></span>
+            </div>
+          </ng-template>
+        </mat-tab>
+
+         <mat-tab *ngIf="rolUsuario === 'Mesero'">
+          <ng-template mat-tab-label>
+            <div class="tab-label-wrapper">
+              <mat-icon class="me-1">table_restaurant</mat-icon>
+              <span>Cuentas</span>
+            </div>
+          </ng-template>
+        </mat-tab>
+
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <div class="tab-label-wrapper">
+              <span>Finalizado</span>
+              <span class="badge-dot" *ngIf="novedadesPorEstado['ENTREGADO'] > 0"></span>
+            </div>
+          </ng-template>
+        </mat-tab>
+
+       
+
+        <mat-tab *ngIf="esAdministrador()">
+          <ng-template mat-tab-label>
+            <div class="tab-label-wrapper">
+              <span>Abonado</span>
+              <span class="badge-dot" *ngIf="novedadesPorEstado['ABONADO'] > 0"></span>
+            </div>
+          </ng-template>
+        </mat-tab>
+
+        <mat-tab *ngIf="esAdministrador()">
+          <ng-template mat-tab-label>
+            <div class="tab-label-wrapper">
+              <span>Cancelado</span>
+              <span class="badge-dot" *ngIf="novedadesPorEstado['CANCELADO'] > 0"></span>
+            </div>
+          </ng-template>
+        </mat-tab>
+
+        <mat-tab *ngIf="esAdministrador()" label="Todos"></mat-tab>
+
+      </mat-tab-group>
+    </div>
+  </div>
+
+
+
+  <div class="pedidos-container position-relative">
+
+    <div class="spinner-overlay" *ngIf="(spinnerService.isLoading$ | async)">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <div *ngIf="vistaCuentas" class="fade-in">
+
+      <div class="row g-3">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let mesa of Mismesas">
+          <div class="card border-0 shadow-sm h-100 pedido-card"
+            style="cursor: pointer; border-left: 5px solid #28a745 !important;" 
+            
+            >
+            <div class="card-body p-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="card-title mb-0 fw-bold">{{ mesa.nombreMesa }}</h5>
+
+                <span *ngIf="mesa.tienePedidosEnCocina" class="badge bg-warning text-dark animate-pulse">
+                  <mat-icon
+                    style="font-size: 14px; height: 14px; width: 14px; vertical-align: middle;">hourglass_top</mat-icon>
+                  Cocina
+                </span>
+              </div>
+
+
+              <div class="text-center py-3 zona-precio" 
+           (click)="abrirResumenMesa($event, mesa)" 
+           matTooltip="Ver detalle de cuenta">
+           
+        <p class="text-muted small mb-0">Consumo Actual</p>
+        <h3 class="fw-bold text-primary mb-0">{{ mesa.totalCalculado | currency:'S/.' }}</h3>
+        <small class="text-primary" style="font-size: 0.7rem;">(Ver detalle)</small>
+      </div>
+
+      <div class="d-flex justify-content-between text-muted small mt-2 pt-2 border-top">
+        
+      
+        <span title="Rondas de pedidos">
+          <mat-icon class="tiny-icon">receipt_long</mat-icon>
+          {{ mesa.cantidadPedidos }} Comandas
+        </span>
+
+         <button 
+              mat-raised-button 
+              color="primary" 
+              class="btn-agregar-pedido"
+              (click)="agregarPedidoAMesa($event, mesa)"
+              [disabled]="!cajaAbierta"
+              matTooltip="{{ !cajaAbierta ? 'Caja cerrada - No se pueden crear pedidos' : 'Agregar nuevo pedido a esta mesa' }}">
+              <mat-icon>add_circle</mat-icon>
+            </button>
+      </div>
+       
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center py-5 text-muted" *ngIf="Mismesas.length === 0 && !(spinnerService.isLoading$ | async)">
+        <mat-icon style="font-size:48px">table_restaurant</mat-icon>
+        <p class="mt-2 mb-0">No tienes mesas activas en este momento.</p>
+      </div>
+
+
+      <div class="mt-4" *ngIf="totalMesas > 0 && !(spinnerService.isLoading$ | async)">
+        <mat-paginator [length]="totalMesas" [pageSize]="mesasPageSize" [pageSizeOptions]="[5, 10, 20]"
+          [pageIndex]="mesasPage" (page)="onMesasPageChange($event)" aria-label="Seleccionar página de mesas">
+        </mat-paginator>
+      </div>
+
+    </div> 
+  </div>
+
+  <div *ngIf="!vistaCuentas">
+
+
+
+    <!-- Cards de pedidos -->
+    <div class="row g-3" *ngIf="allPedidos?.length">
+      <div class="col-12 col-sm-6 col-lg-4" *ngFor="let pedido of allPedidos">
+        <div class="card border-0 shadow-sm h-100 pedido-card"
+          [class.highlight-card]="pedidosResaltados.has(pedido.idPedido)" (click)="quitarResalteNuevo(pedido.idPedido)">
+
+          <div class="nuevo-indicador" *ngIf="pedidosResaltados.has(pedido.idPedido)">
+            <span class="punto-brillante"></span>
+
+          </div>
+
+          <div class="barra-estado" [ngClass]="getEstadoColor(pedido.estadoPedido)">
+          </div>
+
+          <div class="card-body p-3">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div class="flex-grow-1">
+                <h5 class="card-title mb-1">
+                  {{ getTituloPedido(pedido) }}
+                </h5>
+
+
+
+              </div>
+
+              <div class="d-flex gap-1 acciones">
+                <button mat-icon-button color="primary"
+                  *ngIf=" pedido.estadoPedido !== 'CANCELADO'
+                          && pedido.estadoPedido !== 'ABONADO' && rolUsuario === 'Administrador'"
+                  (click)="abrirModalEditar(pedido)" class="btn-icon-small">
+                  <mat-icon style="font-size:18px">edit</mat-icon>
+                </button>
+
+                <button mat-icon-button color="accent" (click)="abrirModalVer(pedido)" class="btn-icon-small">
+                  <mat-icon style="font-size:18px">visibility</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <!-- Información -->
+            <div class="row mb-3">
+              <div class="col-6">
+
+                <p class="small text-muted mb-1 d-flex align-items-center gap-1">
+                  <mat-icon class="icon-inline">schedule</mat-icon>
+                  {{ pedido.fechaRegistro | date:'HH:mm' }}
+                </p>
+
+
+
+                <p *ngIf="pedido.estadoPedido === 'ENVIADO'" class="small mb-1 d-flex align-items-center gap-1"
+                  [ngClass]="{'text-danger': isTiempoCritico(pedido.fechaRegistro), 'text-muted': !isTiempoCritico(pedido.fechaRegistro)}">
+
+                  <mat-icon class="icon-inline">hourglass_top</mat-icon>
+
+                  {{ getTiempoTranscurrido(pedido.fechaRegistro) }}
+                </p>
+
+                <p *ngIf="pedido.estadoPedido === 'ENTREGADO'" class="small mb-1 d-flex align-items-center gap-1"
+                  [ngClass]="{'text-danger': isTiempoCritico(pedido.ultModificacion), 'text-muted': !isTiempoCritico(pedido.ultModificacion)}">
+
+                  <mat-icon class="icon-inline">hourglass_top</mat-icon>
+
+                  {{ getTiempoTranscurrido(pedido.ultModificacion) }}
+                </p>
+
+
+              </div>
+
+              <div *ngIf="rolUsuario === 'Administrador' || rolUsuario === 'Mesero'" class="col-6 text-end">
+                <p class="small text-muted mb-1"><strong>Monto:</strong></p>
+                <p class="h6 mb-0">{{ pedido.monto | currency:'S/.' }}</p>
+              </div>
+            </div>
+
+            <!-- Estado y acciones -->
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+
+              <div>
+                <span class="badge estado-badge" [ngClass]="getEstadoBadgeClass(pedido.estadoPedido)">
+                  {{ pedido.estadoPedido }}
+                </span>
+                <p class="small text-muted mb-0 mt-1">
+                  Últ. Actualización: {{ pedido.ultModificacion | date:'shortTime' }}
+                </p>
+              </div>
+
+              <div class="d-flex gap-1">
+
+                <button mat-icon-button *ngIf="puedeRetroceder(pedido)
+                          && (rolUsuario === 'Administrador' || rolUsuario === 'Supervisor')
+                          && pedido.estadoPedido !== 'CANCELADO'
+                          && pedido.estadoPedido !== 'ABONADO'"
+                  (click)="cambiarEstadoPedido(pedido, getEstadoAnterior(pedido), true)" matTooltip="Retroceder estado"
+                  class="btn-icon-small">
+                  <mat-icon style="font-size:18px">arrow_back</mat-icon>
+                </button>
+
+                <button mat-raised-button color="primary" *ngIf="puedeAvanzar(pedido)
+            && mostrarFlechaAvance(pedido, rolUsuario)
+            && pedido.estadoPedido !== 'ENTREGADO'" (click)="cambiarEstadoPedido(pedido, getSiguienteEstado(pedido))"
+                  matTooltip="Avanzar estado" class="btn-avanzar">
+
+                  Avanzar
+                </button>
+
+
+                <button type="button" class="btn btn-danger btn-sm btn-cancelar-bs" *ngIf="pedido.estadoPedido !== 'CANCELADO' 
+                    && pedido.estadoPedido !== 'ABONADO' && rolUsuario === 'Administrador'" (click)="cancelarPedido(pedido)"
+                  matTooltip="Cancelar pedido">
+                  <mat-icon fontIcon="delete"></mat-icon>
+                </button>
+
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Caja cerrada -->
+    <div class="text-center py-5 text-muted" *ngIf="!cajaAbierta && !(spinnerService.isLoading$ | async)">
+      <mat-icon style="font-size:48px">lock</mat-icon>
+      <p class="mt-2 mb-0">Caja cerrada. No se pueden mostrar pedidos.</p>
+    </div>
+
+    <!-- Mensaje sin registros -->
+    <div class="text-center py-5 text-muted"
+      *ngIf="cajaAbierta && !allPedidos?.length && !(spinnerService.isLoading$ | async)">
+      <mat-icon style="font-size:48px">inbox</mat-icon>
+      <p class="mt-2 mb-0">No hay pedidos para mostrar</p>
+    </div>
+
+    <!-- Paginador -->
+    <div class="mt-4" *ngIf="totalPedidos > 0 && !(spinnerService.isLoading$ | async)">
+      <mat-paginator *ngIf="!(spinnerService.isLoading$ | async)" [length]="totalPedidos" [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 20]" [pageIndex]="currentPage" (page)="onPageChange($event)"
+        aria-label="Seleccionar página">
+      </mat-paginator>
+    </div>
+
+  </div>
+
+</div>

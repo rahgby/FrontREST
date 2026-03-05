@@ -1,0 +1,155 @@
+<mat-toolbar color="" class="nav-toolbar">
+    <div class="maintoolbar">
+        <button mat-icon-button aria-label="Menu icon" (click)="toggleMenu()">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <div class="mainheader-container">
+            <app-header></app-header>
+            
+        </div>
+
+        <div class="usuario">
+          <app-usernav></app-usernav>
+          
+      </div>
+
+        
+    </div>
+</mat-toolbar>
+
+<mat-sidenav-container autosize>
+    <mat-sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="isMobile ? 'false' : 'true'">
+      <mat-nav-list>
+        <a mat-list-item routerLink="/pages/home">
+          <span class="entry">
+            <mat-icon>house</mat-icon>
+            <span>Inicio</span>
+          </span>
+        </a>
+
+        
+
+        <mat-divider></mat-divider>
+        
+          <span class="section-title">General</span>
+      
+ 
+
+
+        <!-- Productos con Submenú -->
+      <mat-list-item (click)="toggleSubMenu('productos');">
+        <span class="entry">
+          <mat-icon>fastfood</mat-icon>
+          <span>Productos</span>
+        </span>
+      </mat-list-item>
+
+      <!-- Submenú de Productos -->
+      <div [class.open]="isSubMenuOpen('productos')" class="submenu" >
+        <a *ngIf="user?.rol === 'Administrador'" mat-list-item routerLink="/pages/products/suministros">
+          <span class="entry">
+            <mat-icon>inventory</mat-icon>
+            <span>Suministro</span>
+          </span>
+        </a>
+        <a mat-list-item routerLink="/pages/products/platos">
+          <span class="entry">
+            <mat-icon>restaurant</mat-icon>
+            <span>Platos</span>
+          </span>
+        </a>
+
+        <a *ngIf="user?.rol === 'Administrador'" mat-list-item routerLink="/pages/products/adicional">
+          <span class="entry">
+            <mat-icon>fastfood</mat-icon>
+            <span>Adicional</span>
+          </span>
+        </a>
+        <a *ngIf="user?.rol === 'Administrador'" mat-list-item routerLink="/pages/products/sabores">
+          <span class="entry">
+            <mat-icon>icecream</mat-icon>
+            <span>Sabores</span>
+          </span>
+        </a>
+     </div>
+
+      <a *ngIf="user?.rol === 'Administrador'" mat-list-item routerLink="/pages/staff/personal">
+          <span class="entry">
+            <mat-icon>group</mat-icon>
+            <span>Personal</span>
+          </span>
+        </a>
+        <a *ngIf="user?.rol === 'Administrador'" mat-list-item routerLink="/pages/costumers/clientes">
+          <span class="entry">
+            <mat-icon>groups</mat-icon>
+            <span>Clientes</span>
+          </span>
+        </a>
+      
+        <mat-list-item (click)="toggleSubMenu('pedidos');" *ngIf="user?.rol !== 'Cocina'">
+          <span class="entry">
+            <mat-icon>inventory</mat-icon>
+            <span>Pedidos</span>
+          </span>
+        </mat-list-item>
+
+        <div [class.open]="isSubMenuOpen('pedidos')" class="submenu">
+        <a *ngIf="user?.rol === 'Cocina' || user?.rol === 'Administrador'" mat-list-item routerLink="/pages/orders/pedido-cocina">
+          <span class="entry">
+            <mat-icon>kitchen</mat-icon>
+            <span>Cocina</span>
+          </span>
+        </a>
+          <a  mat-list-item routerLink="/pages/orders/pedidos">
+          <span class="entry">
+            <mat-icon>list_alt</mat-icon>
+            <span>Ordenes</span>
+          </span>
+        </a>
+        <a mat-list-item routerLink="/pages/orders/crear-pedido">
+          <span class="entry">
+            <mat-icon>note_add</mat-icon>
+            <span>Crear pedido</span>
+          </span>
+        </a>
+      </div>
+
+      <mat-list-item (click)="toggleSubMenu('ventas');" *ngIf="user?.rol !== 'Cocina'">
+          <span class="entry">
+            <mat-icon>shopping_cart</mat-icon>
+            <span>Ventas</span>
+          </span>
+        </mat-list-item>
+<div [class.open]="isSubMenuOpen('ventas')" class="submenu">
+        
+
+        <a *ngIf="user?.rol === 'Administrador' || user?.rol === 'Caja'" mat-list-item routerLink="/pages/sales/ventas">
+  <span class="entry">
+    <mat-icon>currency_exchange</mat-icon>
+    <span>Ventas</span>
+  </span>
+</a>
+
+<a *ngIf="user?.rol === 'Administrador' || user?.rol === 'Caja'" mat-list-item routerLink="/pages/sales/ventas-historial">
+  <span class="entry">
+    <mat-icon>point_of_sale</mat-icon>
+    <span>Historial Ventas</span>
+  </span>
+</a>
+</div>
+
+<a *ngIf="user?.rol === 'Superadmin'" mat-list-item routerLink="/pages/auditoria/vistaAuditoria">
+  <span class="entry">
+    <mat-icon>admin_panel_settings</mat-icon>
+    <span>Ojo de DIOS</span>
+  </span>
+</a>
+
+ 
+
+      </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <ng-content></ng-content>
+    </mat-sidenav-content>
+</mat-sidenav-container>

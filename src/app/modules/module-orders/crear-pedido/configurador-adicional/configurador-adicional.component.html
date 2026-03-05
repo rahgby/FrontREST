@@ -1,0 +1,48 @@
+<h2 mat-dialog-title class="custom-modal-title">
+  Personalizar: <strong>{{ data.plato.nombre }}</strong>
+</h2>
+
+<mat-dialog-content class="configurador-container">
+  <div *ngFor="let ins of instancias; let i = index" class="instancia-card-wrapper animated fadeIn">
+    
+    <div class="instancia-badge">
+      <mat-icon>label_important</mat-icon>
+      Plato {{ ins.instanciaIndex }} de {{ data.cantidad }}
+    </div>
+
+    <div class="adicionales-grid">
+      <div *ngFor="let adi of data.plato.detalleAdicional" class="adicional-item-card">
+        
+        <div class="adi-info">
+          <span class="adi-nombre">{{ adi.nombre }}</span>
+          <span class="adi-precio">{{ adi.precio | currency:'S/.' }}</span>
+        </div>
+
+        <div class="cantidad-control scale-90">
+          <button mat-icon-button color="warn" 
+                  (click)="cambiarCantidadAdicional(ins, adi, -1)"
+                  [disabled]="getAdicionalCantidad(ins, adi) === 0">
+            <mat-icon>remove_circle_outline</mat-icon>
+          </button>
+          
+          <span class="count-text" [class.active-text]="getAdicionalCantidad(ins, adi) > 0">
+            {{ getAdicionalCantidad(ins, adi) }}
+          </span>
+
+          <button mat-icon-button color="primary" 
+                  (click)="cambiarCantidadAdicional(ins, adi, 1)">
+            <mat-icon>add_circle_outline</mat-icon>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="modal-actions">
+  <button mat-button mat-dialog-close class="btn-cancelar">CANCELAR</button>
+  <button mat-flat-button class="btn-confirmar-modal" (click)="confirmar()">
+    AGREGAR AL PEDIDO
+  </button>
+</mat-dialog-actions>

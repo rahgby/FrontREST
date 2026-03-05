@@ -1,0 +1,85 @@
+<div class="resumen-container">
+    <div class="header">
+        <mat-icon class="header-icon">check_circle</mat-icon>
+        <h2>Cierre de Caja Exitoso</h2>
+        <p class="subtitle" *ngIf="caja">ID Operación: #{{caja.idCaja}}</p>
+    </div>
+
+    <mat-dialog-content class="content">
+        <div *ngIf="loading" class="center-box">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Generando resumen...</p>
+        </div>
+
+        <div *ngIf="error" class="center-box error-text">
+            <mat-icon>error_outline</mat-icon>
+            <p>No se pudieron cargar los datos del cierre.</p>
+        </div>
+
+        <div *ngIf="!loading && caja" class="ticket-style">
+            
+            <div class="section-dates">
+                <div class="date-row">
+                    <span class="label">Apertura:</span>
+                    <span class="val">{{caja.fechaInicio | date:'short'}}</span>
+                </div>
+                <div class="date-row">
+                    <span class="label">Cierre:</span>
+                    <span class="val">{{caja.fechaCierre | date:'short'}}</span>
+                </div>
+            </div>
+
+            <hr class="dashed-line">
+
+            <div class="money-grid">
+                <div class="money-item">
+                    <small>EFECTIVO</small>
+                    <p>{{caja.montoEfectivo | currency:'S/ '}}</p>
+                </div>
+                <div class="money-item">
+                    <small>TARJETA</small>
+                    <p>{{caja.montoTarjeta | currency:'S/ '}}</p>
+                </div>
+                <div class="money-item">
+                    <small>YAPE</small>
+                    <p>{{caja.montoYape | currency:'S/ '}}</p>
+                </div>
+
+                <div class="money-item">
+                    <small>PLIN</small>
+                    <p>{{caja.montoPlin | currency:'S/ '}}</p>
+                </div>
+            </div>
+
+            <hr class="dashed-line">
+
+            <div class="totals-section">
+                <div class="row">
+                    <span>Venta Neta del Turno</span>
+                    <span class="net-value">{{caja.ventaNeta | currency:'S/ '}}</span>
+                </div>
+                <div class="row">
+                    <span>Monto Inicial (Base)</span>
+                    <span>+ {{caja.montoInicial | currency:'S/ '}}</span>
+                </div>
+                <div class="row total-row">
+                    <span>SALDO TOTAL EN CAJA</span>
+                    <span class="final-value">{{caja.monto | currency:'S/ '}}</span>
+                </div>
+            </div>
+
+            <div class="propina-box" *ngIf="caja.montoPropina && caja.montoPropina > 0">
+                <span>Propinas registradas:</span>
+                <strong>{{caja.montoPropina | currency:'S/ '}}</strong>
+            </div>
+
+        </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" class="actions">
+        <button mat-button (click)="cerrar()">SALIR</button>
+        <button mat-raised-button color="primary" (click)="imprimir()">
+            <mat-icon>print</mat-icon> IMPRIMIR
+        </button>
+    </mat-dialog-actions>
+</div>

@@ -1,0 +1,474 @@
+<div class="contenedor-principal">
+    <!-- Header solo con título -->
+    <h2 class="titulo-pedido">Ventas</h2>
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb custom-breadcrumb">
+            <li class="breadcrumb-item">
+                <a routerLink="/pedidos" class="d-flex align-items-center gap-1">
+                    <mat-icon class="breadcrumb-icon">home</mat-icon>
+                    <span>Inicio</span>
+                </a>
+            </li>
+
+            <li class="breadcrumb-item">
+                <a routerLink="/pedidos">Ventas</a>
+            </li>
+
+        </ol>
+    </nav>
+    <div class="comparacion-ventas">
+        <mat-card class="total-hoy" [ngClass]="{'caja-cerrada-bg': !isCajaAbierta && !isLoadingCajaActual}">
+            <div class="contenido-tarjeta">
+
+                <div *ngIf="isLoadingCajaActual" class="loading-state">
+                    <mat-spinner diameter="35" color="primary"></mat-spinner>
+                    <span class="loading-texto">Verificando caja...</span>
+                </div>
+
+                <ng-container *ngIf="!isLoadingCajaActual">
+
+                    <ng-container *ngIf="isCajaAbierta">
+                        <mat-icon class="icono-calendario activo">point_of_sale</mat-icon>
+                        <div class="texto-tarjeta">
+
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <h3 class="m-0">Caja Actual</h3>
+                                <button class="btn-privacidad" (click)="toggleSaldos()" title="Ocultar/Mostrar saldo">
+                                    <mat-icon>{{ mostrarSaldos ? 'visibility' : 'visibility_off' }}</mat-icon>
+                                </button>
+                            </div>
+
+                            <p class="monto-principal">
+                                <mat-spinner *ngIf="isLoadingReporte" diameter="30" style="margin: 0;"></mat-spinner>
+
+                                <span *ngIf="!isLoadingReporte">
+                                    {{ mostrarSaldos ? (totals?.totalGeneral | currency:'S/ ') : 'S/ *****' }}
+                                </span>
+                            </p>
+
+                            <small class="detalle-texto">
+                                Base: {{ mostrarSaldos ? (cajaActual?.montoInicial| currency:'S/') : '***' }} |
+                                Abrió: {{ cajaActual?.fechaInicio | date:'shortTime' }}
+                            </small>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="!isCajaAbierta">
+                        <mat-icon class="icono-calendario inactivo">lock_clock</mat-icon>
+                        <div class="texto-tarjeta estado-cerrado">
+                            <h3 class="m-0">Turno Inactivo</h3>
+                            <p class="texto-alerta">La caja está cerrada</p>
+                            <small class="detalle-texto">Apertura la caja para empezar a registrar ventas.</small>
+                        </div>
+                    </ng-container>
+
+                </ng-container>
+            </div>
+        </mat-card>
+
+        <mat-card class="total-ayer">
+            <div class="contenido-tarjeta">
+
+                <div *ngIf="isLoadingCajaAnterior" class="loading-state">
+                    <mat-spinner diameter="35" color="accent"></mat-spinner>
+                    <span class="loading-texto">Buscando historial...</span>
+                </div>
+
+                <ng-container *ngIf="!isLoadingCajaAnterior">
+                    <mat-icon class="icono-historial">history</mat-icon>
+                    <div class="texto-tarjeta">
+
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <h3 class="m-0">Último Cierre</h3>
+                            <button class="btn-privacidad" (click)="toggleSaldoAnterior()"
+                                title="Ocultar/Mostrar saldo">
+                                <mat-icon>{{ mostrarSaldoAnterior ? 'visibility' : 'visibility_off' }}</mat-icon>
+                            </button>
+                        </div>
+
+                        <ng-container *ngIf="cajaAnterior; else sinHistorial">
+                            <p class="monto-secundario">
+                                {{ mostrarSaldoAnterior ? (cajaAnterior.monto | currency:'S/') : 'S/ *****' }}
+                            </p>
+                            <small class="detalle-texto">
+                                Cerrada el {{ cajaAnterior.fechaCierre | date:'d MMM, h:mm a' }}
+                            </small>
+                        </ng-container>
+
+                        <ng-template #sinHistorial>
+                            <p class="texto-gris">Sin registros</p>
+                            <small class="detalle-texto">Aún no hay cierres previos guardados.</small>
+                        </ng-template>
+
+                    </div>
+                </ng-container>
+
+            </div>
+        </mat-card>
+
+    </div>
+
+    <div class="acciones-cajero">
+
+        <button mat-flat-button class="btn-accion btn-largo" [ngClass]="isCajaAbierta ? 'btn-cerrar' : 'btn-iniciar'"
+            (click)="isCajaAbierta ? cerrarCaja() : iniciarCaja()" [disabled]="isLoadingCajaActual">
+
+            <ng-container *ngIf="isLoadingCajaActual">
+                <mat-spinner diameter="20" class="spinner-boton"></mat-spinner>
+                <span>Procesando...</span>
+            </ng-container>
+
+            <ng-container *ngIf="!isLoadingCajaActual && isCajaAbierta">
+                <mat-icon>lock_outline</mat-icon>
+                <span>Cerrar Caja</span>
+            </ng-container>
+
+            <ng-container *ngIf="!isLoadingCajaActual && !isCajaAbierta">
+                <mat-icon>play_circle_outline</mat-icon>
+                <span>Iniciar Turno</span>
+            </ng-container>
+        </button>
+
+        <button mat-flat-button class="btn-accion btn-largo btn-delivery"
+            routerLink="/pages/orders/crear-pedido/carta/-1" [disabled]="isLoadingCajaActual">
+            <mat-icon>two_wheeler</mat-icon>
+            <span>Crear Delivery</span>
+        </button>
+
+        <button mat-stroked-button class="btn-accion btn-largo btn-historial" (click)="abrirHistorialCajas()"
+            [disabled]="isLoadingCajaActual">
+            <mat-icon>history</mat-icon>
+            <span>Ver Historial de Cajas</span>
+        </button>
+
+    </div>
+
+    <div class="contendor-mapa">
+
+        <mat-card class="mesas-card">
+
+            <div class="main-card-header">
+                <span class="subtitulo-header">Mapa de Mesas</span>
+            </div>
+
+            <div class="mapa-layout-general">
+
+                <div *ngIf="isLoadingMapa" class="loading-box">
+                    <mat-spinner diameter="40"></mat-spinner>
+                    <p>Cargando salón...</p>
+                </div>
+
+                <ng-container *ngIf="!isLoadingMapa && mapaAreas">
+
+                    <div *ngFor="let area of mapaAreas" class="area-card-container">
+
+                        <div class="area-header-blue">
+                            <div class="d-flex align-items-center gap-2">
+                                <mat-icon class="icon-white">place</mat-icon>
+                                <h3 class="m-0 text-white">{{ area.nombreArea }}</h3>
+                            </div>
+                            <span class="badge-cantidad-white">{{ area.mesas.length }}</span>
+                        </div>
+
+                        <div class="area-body">
+
+                            <div class="mesas-grid-interno">
+                                <div *ngFor="let mesa of area.mesas" class="mesa-item-centered" [ngClass]="{
+                           'is-libre': mesa.estadoMapa === 'LIBRE',
+                           'is-preparando': mesa.estadoMapa === 'PREPARANDO',
+                           'is-abonable': mesa.estadoMapa === 'ABONABLE'
+                         }" (click)="abrirDetalleMesa(mesa)">
+
+                                    <div class="badge-cobrar-corner" *ngIf="mesa.estadoMapa === 'ABONABLE'">
+                                        <mat-icon>priority_high</mat-icon>
+                                    </div>
+
+                                    <mat-icon class="mesa-icon-main">
+                                        {{ mesa.estadoMapa === 'ABONABLE' ? 'payments' : (mesa.estadoMapa ===
+                                        'PREPARANDO' ? 'restaurant' : 'table_restaurant') }}
+                                    </mat-icon>
+                                    <span class="mesa-nombre-centered">{{ mesa.nombre }}</span>
+                                    <span class="mesero-mini" *ngIf="mesa.estadoMapa !== 'LIBRE'">
+                                        {{ mesa.meseroAsignado }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div *ngIf="area.mesas.length === 0" class="text-center py-4 text-muted">
+                                <small>Área vacía</small>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </mat-card>
+    </div>
+
+    <div class="contenedor-resumen" *ngIf="isCajaAbierta && !isLoadingCajaActual">
+        <mat-card class="resumen-turno-card">
+            <div class="cuerpo-resumen">
+
+                <button class="btn-privacidad-dark" (click)="toggleSaldoInfo()" title="Ocultar/Mostrar saldo">
+                    <mat-icon>{{ mostrarSaldoInfo ? 'visibility' : 'visibility_off' }}</mat-icon>
+                </button>
+
+                <div class="metrica-operacion">
+                    <div class="icono-fondo">
+                        <mat-icon>receipt_long</mat-icon>
+                    </div>
+                    <div class="texto-operacion">
+                        <span class="etiqueta">Ventas Realizadas</span>
+                        <span class="valor-destacado">{{ ventasTotalesCount}}</span>
+                    </div>
+
+                </div>
+
+                <div class="divisor-vertical"></div>
+
+                <div class="desglose-pagos">
+                    <span class="titulo-pagos">Ingresos por Método de Pago</span>
+
+                    <div class="grid-pagos">
+
+                        <div class="pago-item efectivo">
+                            <div class="icono-wrapper">
+                                <mat-icon>payments</mat-icon>
+                            </div>
+                            <div class="info-pago">
+                                <span class="tipo">Efectivo</span>
+                                <div class="zona-monto">
+                                    <mat-spinner *ngIf="isLoadingReporte" diameter="20" strokeWidth="2"></mat-spinner>
+                                    <span class="monto" *ngIf="!isLoadingReporte">
+                                        {{ mostrarSaldoInfo ? (getMonto('EFECTIVO') | currency:'S/ ') : 'S/ ***.**' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pago-item tarjeta">
+                            <div class="icono-wrapper">
+                                <mat-icon>credit_card</mat-icon>
+                            </div>
+                            <div class="info-pago">
+                                <span class="tipo">Tarjeta</span>
+                                <div class="zona-monto">
+                                    <mat-spinner *ngIf="isLoadingReporte" diameter="20" strokeWidth="2"></mat-spinner>
+                                    <span class="monto" *ngIf="!isLoadingReporte">
+                                        {{ mostrarSaldoInfo ? (getMonto('TARJETA') | currency:'S/ ') : 'S/ ***.**' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pago-item yape">
+                            <div class="icono-wrapper">
+                                <mat-icon>qr_code_2</mat-icon>
+                            </div>
+                            <div class="info-pago">
+                                <span class="tipo">Yape</span>
+                                <div class="zona-monto">
+                                    <mat-spinner *ngIf="isLoadingReporte" diameter="20" strokeWidth="2"></mat-spinner>
+                                    <span class="monto" *ngIf="!isLoadingReporte">
+                                        {{ mostrarSaldoInfo ? (getMonto('YAPE') | currency:'S/ ') : 'S/ ***.**' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pago-item plin">
+                            <div class="icono-wrapper">
+                                <mat-icon>phonelink_ring</mat-icon>
+                            </div>
+                            <div class="info-pago">
+                                <span class="tipo">Plin</span>
+                                <div class="zona-monto">
+                                    <mat-spinner *ngIf="isLoadingReporte" diameter="20" strokeWidth="2"></mat-spinner>
+                                    <span class="monto" *ngIf="!isLoadingReporte">
+                                        {{ mostrarSaldoInfo ? (getMonto('PLIN') | currency:'S/ ') : 'S/ ***.**' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </mat-card>
+    </div>
+
+    <mat-divider class="propinas-divider"></mat-divider>
+
+    <div class="historial-container">
+
+        <div *ngIf="!isCajaAbierta" class="caja-cerrada-banner">
+            <div class="icon-wrapper-lock">
+                <mat-icon>lock</mat-icon>
+            </div>
+            <div>
+                <h3>Caja Cerrada</h3>
+                <p>Abre una caja para comenzar a registrar y visualizar ventas actuales.</p>
+            </div>
+        </div>
+
+        <ng-container *ngIf="isCajaAbierta">
+
+            <div class="sales-card">
+
+                <div class="sales-card-header">
+                    <div class="header-content">
+                        <mat-icon class="header-icon">history</mat-icon>
+                        <span class="header-title">Historial de Turno</span>
+                    </div>
+                    <div class="badge-contador">{{ totalRegistros }} Ventas</div>
+                </div>
+
+                <div class="filters-bar">
+
+                    <mat-form-field appearance="outline" class="search-field">
+                        <mat-label>Buscar ticket, método...</mat-label>
+                        <input matInput #txtSearch (keyup.enter)="aplicarFiltros()" [(ngModel)]="searchTerm"
+                            placeholder="Ej: 17 o Yape">
+                        <mat-icon matSuffix>search</mat-icon>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="time-field">
+                        <mat-label>Desde</mat-label>
+                        <input matInput type="time" [(ngModel)]="horaInicio" (change)="aplicarFiltros()">
+                        <mat-icon matSuffix class="small-icon">schedule</mat-icon>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="time-field">
+                        <mat-label>Hasta</mat-label>
+                        <input matInput type="time" [(ngModel)]="horaFin" (change)="aplicarFiltros()">
+                        <mat-icon matSuffix class="small-icon">schedule</mat-icon>
+                    </mat-form-field>
+
+                    <button mat-icon-button color="warn" *ngIf="searchTerm || horaInicio || horaFin"
+                        matTooltip="Limpiar filtros" (click)="limpiarFiltros()">
+                        <mat-icon>filter_alt_off</mat-icon>
+                    </button>
+
+                </div>
+
+                <div class="table-container">
+                    <table mat-table [dataSource]="ventas">
+
+                        <ng-container matColumnDef="ticket">
+                            <th mat-header-cell *matHeaderCellDef> Ticket </th>
+                            <td mat-cell *matCellDef="let v">
+                                <div class="ticket-wrapper">
+                                    <span class="ticket-badge">#{{ v.correlativo }}</span>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        
+
+                        <ng-container matColumnDef="total">
+                            <th mat-header-cell *matHeaderCellDef> Total </th>
+                            <td mat-cell *matCellDef="let v" class="total-cell">
+                                {{ v.total | currency:'S/ ' }}
+                            </td>
+                        </ng-container>
+
+                        
+                        <ng-container matColumnDef="desglose">
+                            <th mat-header-cell *matHeaderCellDef> Detalle de Cobro </th>
+                            <td mat-cell *matCellDef="let v">
+                              <div class="pago-tags">
+                                <span *ngFor="let pago of v.detalleVentaPago"
+                                      [class]="'tag-pago ' + pago.metodoPago.toLowerCase()">
+                          
+                                  <mat-icon class="tiny-icon" *ngIf="pago.metodoPago === 'EFECTIVO'">payments</mat-icon>
+                                  <mat-icon class="tiny-icon" *ngIf="pago.metodoPago === 'TARJETA'">credit_card</mat-icon>
+                                  <mat-icon class="tiny-icon" *ngIf="pago.metodoPago.includes('YAPE')">qr_code_2</mat-icon>
+                                  <mat-icon class="tiny-icon" *ngIf="pago.metodoPago == 'PLIN'">phonelink_ring</mat-icon>
+                          
+                                  {{ pago.metodoPago }}: {{ pago.monto | currency:'S/ ' }}
+                                </span>
+                              </div>
+                            </td>
+                          </ng-container>
+
+                        <ng-container matColumnDef="hora">
+                            <th mat-header-cell *matHeaderCellDef> Hora </th>
+                            <td mat-cell *matCellDef="let v" class="text-muted">
+                                {{ v.fechaAbonado | date:'hh:mm a' }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="tipo">
+                            <th mat-header-cell *matHeaderCellDef> Tipo </th>
+                            <td mat-cell *matCellDef="let v">
+                                <span>
+                                    {{ v.isDelivery ? 'Delivery' : 'Mesa' }}
+                                </span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="acciones">
+                            <th mat-header-cell *matHeaderCellDef class="text-center"> Acciones </th>
+                            <td mat-cell *matCellDef="let v">
+                                <div class="actions-wrapper">
+                                    <button mat-icon-button class="btn-action-view" matTooltip="Ver Pedidos"
+                                        (click)="verPedidos(v)">
+                                        <mat-icon>visibility</mat-icon>
+                                    </button>
+                                    <button mat-icon-button class="btn-action-print" matTooltip="Comprobante"
+                                        (click)="crearComprobante(v)">
+                                        <mat-icon>receipt_long</mat-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </ng-container>
+
+
+
+                        <tr mat-header-row
+                            *matHeaderRowDef="['ticket', 'hora', 'tipo', 'desglose','total', 'acciones']"></tr>
+                        <tr mat-row
+                            *matRowDef="let row; columns: ['ticket', 'hora', 'tipo', 'desglose', 'total', 'acciones'];"
+                            class="hover-row"></tr>
+                    </table>
+
+                    <div *ngIf="ventas.length === 0 && !isLoading" class="no-data-card">
+                        <div class="empty-icon-bg">
+                            <mat-icon>search_off</mat-icon>
+                        </div>
+                        <p>No se encontraron ventas con estos filtros.</p>
+                    </div>
+                </div>
+
+                <mat-paginator [length]="totalRegistros" [pageSize]="pageSize" [pageSizeOptions]="[10, 20, 50]"
+                    (page)="onPageChange($event)">
+                </mat-paginator>
+
+            </div>
+        </ng-container>
+    </div>
+    <!-- 
+    <div class="propina-minimal-bar" *ngIf="isCajaAbierta && !isLoadingCajaActual">
+    
+        <div class="d-flex align-items-start gap-3">
+            <mat-icon class="icono-propina-subtle">tips_and_updates</mat-icon>
+            
+            <div class="d-flex flex-column">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="titulo-subtle">Propinas del Turno</span>
+                    <button class="btn-privacidad-subtle" (click)="togglePropinas()" title="Ocultar/Mostrar propinas">
+                        <mat-icon>{{ mostrarPropinas ? 'visibility' : 'visibility_off' }}</mat-icon>
+                    </button>
+                </div>
+                
+                <span class="monto-subtle">
+                    {{ mostrarPropinas ? (totalPropinasCajaActual | currency:'S/') : 'S/ ***.**' }}
+                </span>
+            </div>
+        </div>
+    
+        <small class="help-text-subtle ms-auto d-none d-sm-block">
+            Acumulado exclusivo de propinas en la caja actual.
+        </small>
+    </div>
+    -->
+</div>

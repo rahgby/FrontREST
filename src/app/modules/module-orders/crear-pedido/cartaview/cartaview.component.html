@@ -1,0 +1,201 @@
+<h2 *ngIf="isDelivery">Crear Delivery</h2>
+
+<h3 *ngIf="!isDelivery" style="display: flex; align-items: center; gap: 8px;">
+    <mat-icon>table_restaurant</mat-icon>:
+    {{nombreMesa}}
+</h3>
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb custom-breadcrumb">
+        <li class="breadcrumb-item">
+            <a routerLink="/pedidos" class="d-flex align-items-center gap-1">
+                <mat-icon class="breadcrumb-icon">home</mat-icon>
+                <span>Inicio</span>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a routerLink="/pedidos">Pedidos</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a routerLink="/pages/orders/crear-pedido/mis-mesas">Crear Pedido</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Carta</li>
+    </ol>
+    
+</nav>
+
+<div class="card main-layout-card">
+    <div class="card-body">
+
+        <div class="text-center py-5 text-muted" *ngIf="!isLoadingCategorias && categorias.length === 0">
+            <mat-icon style="font-size:48px; height: 48px; width: 48px;">domain_disabled</mat-icon>
+            <p class="mt-2 mb-0">No hay categorias disponibles. Contacta al administrador.</p>
+        </div>
+
+        <ng-container *ngIf="categorias.length > 0 || isLoadingCategorias">
+
+           <div class="search-section">
+    <mat-form-field appearance="outline" class="custom-search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <mat-label>Buscar Plato...</mat-label>
+        <!-- Eliminamos (ngModelChange)="onBusquedaChange()" y (keyup.enter) -->
+        <input matInput [(ngModel)]="busqueda" 
+               (keyup.enter)="ejecutarBusqueda()" /> 
+        <button *ngIf="busqueda" matSuffix mat-icon-button aria-label="Limpiar"
+            (click)="limpiarBusqueda()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" class="btn-buscar" 
+            (click)="ejecutarBusqueda()" [disabled]="!busqueda">
+        <mat-icon>search</mat-icon>
+    </button>
+
+</div>
+            <div class="navigation-section">
+                <div class="categorias-slider" *ngIf="!isLoadingCategorias">
+                    <div class="categoria-item" [class.activo]="selectedCategoriaIndex === 0"
+                        (click)="seleccionarCategoria(0)">
+                        <mat-icon>shopping_cart</mat-icon>
+                        <span>Carrito</span>
+                        <span class="badge" *ngIf="seleccionados.length > 0">{{ totalItems }}</span>
+                    </div>
+
+                    <div class="categoria-item" *ngFor="let categoria of categorias; let i = index"
+                        [class.activo]="selectedCategoriaIndex === (i + 1)"
+                        (click)="seleccionarCategoria(i + 1)">
+                        {{ categoria.nombre }}
+                    </div>
+                </div>
+
+                <div class="contenido-dinamico">
+
+                    <div *ngIf="selectedCategoriaIndex === 0" class="fade-in">
+                        
+                        <div class="p-3 text-center text-muted" *ngIf="seleccionados.length === 0">
+                            <mat-icon style="font-size:48px; height:48px; width:48px;">shopping_cart</mat-icon>
+                            <p class="mt-2 mb-0">Aún no has seleccionado platos</p>
+                        </div>
+
+                        <div class="productos-grid" *ngIf="seleccionados.length > 0">
+                            <div class="lista-seleccionados">
+                                <div *ngFor="let item of seleccionados" class="ticket-item"
+                                    [class.es-personalizado]="item.esPersonalizado">
+                                    
+                                    <div class="ticket-main">
+                                        <div class="ticket-info">
+                                            <span class="ticket-nombre">{{ item.nombre }}</span>
+                                            <span class="ticket-precio-base">{{ item.precio | currency:'S/.' }} c/u</span>
+                                        </div>
+                                        <div class="cantidad-badge">x{{ item.cantidad }}</div>
+                                    </div>
+
+                                    <div class="ticket-extras" *ngIf="(item.detallePedidoAdicional?.length || 0) > 0">
+                                        <div *ngFor="let extra of item.detallePedidoAdicional" class="extra-line">
+                                            <div class="extra-detail">
+                                                <mat-icon>subdirectory_arrow_right</mat-icon>
+                                                <span class="extra-qty">{{ extra.cantidad }}x</span>
+                                                <span class="extra-text">{{ extra.adicional }}</span>
+                                            </div>
+                                            <span class="extra-price">+{{ (extra.precio * extra.cantidad) | currency:'S/.' }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="ticket-actions">
+                                        <button mat-button color="warn" class="btn-delete-item"
+                                            (click)="quitarProducto(item)">
+                                            <mat-icon>delete_outline</mat-icon> Eliminar
+                                        </button>
+                                        <div class="ticket-subtotal-container">
+                                            <span class="label-total">Subtotal</span>
+                                            <span class="value-total">
+                                                {{ (item.subtotal ? item.subtotal : (item.precio * item.cantidad)) | currency:'S/.' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="selectedCategoriaIndex > 0" class="fade-in">
+                        
+                        <div style="height: 4px; overflow: hidden; margin-top: 10px; margin-bottom: 8px;">
+                            <mat-progress-bar mode="indeterminate" *ngIf="isLoadingProductos"></mat-progress-bar>
+                        </div>
+
+                        <div class="p-3 text-center text-muted"
+                            *ngIf="!isLoadingProductos && productosFiltradas.length === 0">
+                            <mat-icon style="font-size:48px;">info_outline</mat-icon>
+                            <p>No hay productos para esta categoría</p>
+                        </div>
+
+                        <div class="productos-grid" *ngIf="!isLoadingProductos && productosFiltradas.length > 0">
+                            <div *ngFor="let plato of productosFiltradas" class="producto-card">
+                                <div class="producto-info">
+                                    <div class="producto-header">
+                                        <span class="producto-nombre">{{ plato.nombre }}</span>
+                                        <span class="producto-descripcion">{{ plato.descripcion }}</span>
+                                    </div>
+                                    <div class="producto-footer">
+                                        <span class="producto-precio">{{ plato.precio | currency:'S/.' }}</span>
+                                        <div class="actions-wrapper">
+                                            
+                                            <button mat-flat-button color="primary"
+                                                *ngIf="getCantidadSeleccionada(plato) === 0"
+                                                (click)="agregarProducto(plato)"
+                                                class="btn-agregar-custom action-fixed-width">
+                                                +
+                                            </button>
+
+                                            <div class="controles-activos-wrapper action-fixed-width"
+                                                *ngIf="getCantidadSeleccionada(plato) > 0">
+                                                
+                                                <button mat-stroked-button class="btn-personalizar-full animated fadeIn"
+                                                    *ngIf="(plato.detalleAdicional?.length || 0) > 0"
+                                                    (click)="abrirConfigurador(plato)">
+                                                    <mat-icon>tune</mat-icon> Adicionales
+                                                </button>
+
+                                                <div class="cantidad-control animated fadeIn">
+                                                    <button mat-icon-button color="warn" (click)="quitarProducto(plato)">
+                                                        <mat-icon>remove_circle_outline</mat-icon>
+                                                    </button>
+                                                    <span class="count-text">{{ getCantidadSeleccionada(plato) }}</span>
+                                                    <button mat-icon-button color="primary" (click)="agregarProducto(plato)">
+                                                        <mat-icon>add_circle_outline</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="footer-container" *ngIf="productosFiltradas.length > 0">
+                            <mat-paginator [length]="totalCount" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+                                (page)="onPageChange($event)" class="refined-paginator">
+                            </mat-paginator>
+                        </div>
+                    </div>
+
+                </div>
+                <mat-progress-bar mode="indeterminate" *ngIf="isLoadingCategorias"></mat-progress-bar>
+            </div>
+        </ng-container>
+    </div>
+</div>
+
+<div class="footer-action-bar">
+    <button mat-flat-button class="btn-confirmar-pedido" [disabled]="seleccionados.length === 0"
+        [class.active]="seleccionados.length > 0" (click)="confirmarPedido()">
+        <div class="confirm-content">
+            <div class="item-badge" [class.has-items]="seleccionados.length > 0">
+                {{ totalItems }}
+            </div>
+            <span class="confirm-text"> Confirmar </span>
+        </div>
+    </button>
+</div>

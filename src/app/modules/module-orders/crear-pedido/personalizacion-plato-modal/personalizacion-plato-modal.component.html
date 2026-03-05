@@ -1,0 +1,114 @@
+<div class="dialog-container">
+    <div class="dialog-header">
+        <h2 class="header-title">{{ plato.nombre }}</h2>
+        <button class="btn-close" (click)="cancelar()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <mat-dialog-content class="personalizacion-body">
+        
+        <!-- Imagen del plato -->
+        <div class="plato-imagen">
+            <img [src]="plato.imgRuta && plato.imgRuta.length > 10 ? plato.imgRuta : 'https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png'"
+                 [alt]="plato.nombre">
+        </div>
+
+        <!-- Descripción y precio -->
+        <div class="plato-info">
+            <p class="descripcion">{{ plato.descripcion }}</p>
+            <p class="precio-base">{{ plato.precio | currency:'S/.' }}</p>
+        </div>
+
+        <!-- Cantidad -->
+        <div class="cantidad-section">
+            <label>Cantidad</label>
+            <div class="stepper-lg">
+                <button (click)="cantidad = cantidad > 1 ? cantidad - 1 : 1" class="step-btn">-</button>
+                <span class="step-num">{{ cantidad }}</span>
+                <button (click)="cantidad = cantidad + 1" class="step-btn">+</button>
+            </div>
+        </div>
+
+        <!-- Opciones: Sabor y Papas -->
+        <div class="options-grid" *ngIf="sabores.length > 0 || plato.categoria.toLowerCase() === 'hamburguesa'">
+            
+            <div class="custom-input-group" *ngIf="sabores.length > 0">
+                <label>Sabor/Salsa</label>
+                <select [(ngModel)]="idSaborSeleccionado">
+                    <option *ngFor="let sabor of sabores" [value]="sabor.idSabor">
+                        {{ sabor.nombre }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="custom-input-group" *ngIf="plato.categoria.toLowerCase() === 'hamburguesa'">
+                <label>Papas</label>
+                <select [(ngModel)]="tipoPapas">
+                    <option value="fritas">Fritas</option>
+                    <option value="al hilo">Al Hilo</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Adicionales -->
+        <div *ngIf="plato.detalleAdicional.length > 0" class="extras-wrapper">
+            <div class="extras-header">
+                <hr>
+                <span>EXTRAS (por unidad)</span>
+                <hr>
+            </div>
+
+            <div class="extra-row" *ngFor="let add of plato.detalleAdicional"
+                 [class.has-qty]="adicionalesCantidadPorPlato[add.idAdicional] > 0">
+                
+                <div class="extra-label">
+                    <div class="extra-name-price">
+                        <span class="ex-name">{{ add.nombre }}</span>
+                        <span class="ex-price">+{{ (add.precio || 0) | currency:'S/.' }}</span>
+                    </div>
+                    
+                    <!-- Mostrar cantidad total si hay más de 1 plato -->
+                    <span class="cantidad-total-badge" *ngIf="cantidad > 1 && adicionalesCantidadPorPlato[add.idAdicional] > 0">
+                        Total: {{ getCantidadTotalAdicional(add.idAdicional) }} 
+                        ({{ getPrecioTotalAdicional(add.idAdicional) | currency:'S/.' }})
+                    </span>
+                </div>
+
+                <div class="stepper">
+                    <button (click)="decrementarAdicional(add.idAdicional)" 
+                            class="step-btn"
+                            [disabled]="adicionalesCantidadPorPlato[add.idAdicional] === 0">
+                        -
+                    </button>
+                    <span class="step-num" [class.active-num]="adicionalesCantidadPorPlato[add.idAdicional] > 0">
+                        {{ adicionalesCantidadPorPlato[add.idAdicional] || 0 }}
+                    </span>
+                    <button (click)="incrementarAdicional(add.idAdicional)" class="step-btn">
+                        +
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comentarios -->
+        <div class="item-notes">
+            <label>Notas especiales</label>
+            <textarea [(ngModel)]="comentario" 
+                      placeholder="Ej: Sin cebolla, término medio, etc."
+                      rows="3"></textarea>
+        </div>
+
+    </mat-dialog-content>
+
+    <!-- Footer con botón de agregar -->
+    <div class="footer-sticky">
+        <button class="confirm-full-btn" (click)="confirmar()">
+            <span class="btn-text">
+                <mat-icon>add_shopping_cart</mat-icon>
+                Agregar {{ cantidad > 1 ? '(' + cantidad + ')' : '' }}
+            </span>
+            <span class="btn-price">{{ subtotal | currency:'S/.' }}</span>
+        </button>
+    </div>
+</div>

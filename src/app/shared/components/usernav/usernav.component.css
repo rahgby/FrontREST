@@ -1,0 +1,387 @@
+.user-nav-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: transparent;
+  color: inherit;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
+.user-nav-container:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.user-nav-container:hover .dropdown-icon {
+  color: #dc690b;
+}
+
+/* Avatar */
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dc690b, #4b2301);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+}
+
+/* Información del usuario */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  overflow: hidden;
+  color: white;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgb(255, 255, 255);
+}
+
+.user-role {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgb(255, 255, 255);
+}
+
+.dropdown-icon {
+  margin-left: auto;
+  color: rgba(0, 0, 0, 0.54);
+  transition: transform 0.2s ease;
+}
+
+/* Propinas */
+.propinas-monto {
+  font-size: 14px;
+  font-weight: 600;
+  padding-right: 10px;
+  padding-left: 0;
+  color: #ffffff;
+}
+
+.propinas-monto-oculto {
+  font-size: 14px;
+  font-weight: 600;
+  padding-right: 10px;
+  padding-left: 0;
+  color: #ffffff;
+}
+
+.propinas-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: #333;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Menú del usuario */
+.user-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  background: #ffffff;
+  border-radius: 4px;
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+  overflow: hidden;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.menu-divider {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 0;
+}
+
+/* Header del menú (solo móvil) */
+.user-menu-header {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 10px;
+  background: #f9f9f9;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 5px;
+}
+
+.user-details-mini {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name-mini {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.user-role-mini {
+  font-size: 11px;
+  color: #666;
+}
+
+.user-avatar-mini mat-icon {
+  color: #dc690b;
+  font-size: 30px;
+  width: 30px;
+  height: 30px;
+}
+
+/* Items del menú */
+button[mat-menu-item] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0 12px;
+  line-height: 32px;
+  font-size: 13px;
+  border-color: #e7e3e3;
+  transition: background 0.2s;
+}
+
+button[mat-menu-item]:hover {
+  background: rgba(171, 168, 168, 0.822);
+}
+
+button[mat-menu-item] mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.54);
+}
+
+/* Botón minimalista */
+.minimalist-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1px 20px;
+  background: transparent;
+  border: none;
+  color: #333;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.minimalist-btn:hover {
+  background: #bdbbbb28;
+}
+
+.small-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  margin-right: 8px;
+  color: #dc690b;
+}
+
+/* ===== NOTIFICACIONES ===== */
+.notificacion-wrapper {
+  position: relative;
+  margin-right: 1rem;
+}
+
+.notis-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 320px;
+  background: white;
+  border-radius: 12px;
+  z-index: 1100;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+.notis-header {
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: #333;
+}
+
+.btn-vaciar {
+  font-size: 0.7rem !important;
+  text-transform: uppercase;
+  padding: 0 8px !important;
+  min-width: auto !important;
+  line-height: 24px !important;
+}
+
+.notis-body {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Tarjeta de notificación */
+.noti-card {
+  display: flex;
+  padding: 12px;
+  gap: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.noti-card:hover {
+  background: #f1f8ff;
+}
+
+.noti-icon-box {
+  background: #e3f2fd;
+  color: #1976d2;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.noti-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.noti-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.pedido-tag {
+  background: #333;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.noti-time {
+  font-size: 0.7rem;
+  color: #999;
+}
+
+.noti-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sin notificaciones */
+.empty-notis {
+  padding: 40px 20px;
+  text-align: center;
+  color: #bbb;
+}
+
+.empty-notis mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-color-scheme: dark) {
+  .user-name { color: rgba(255, 255, 255, 0.87); }
+  .user-role { color: rgba(255, 255, 255, 0.6); }
+  .dropdown-icon { color: rgba(255, 255, 255, 0.7); }
+  
+  .user-nav-container:hover { background-color: rgba(255, 255, 255, 0.04); }
+  
+  .user-menu { background: #e7e3e3; }
+  
+  button[mat-menu-item] { color: rgba(0, 0, 0, 0.87); }
+  button[mat-menu-item]:hover { background: rgba(255, 255, 255, 0.04); }
+  button[mat-menu-item] mat-icon { color: rgba(255, 0, 0, 0.54); }
+}
+
+@media (max-width: 768px) {
+  .user-info, .dropdown-icon {
+    display: none !important;
+  }
+
+  .user-nav-container {
+    padding: 8px 8px;
+    gap: 8px;
+  }
+
+  .notificacion-wrapper {
+    margin-right: 0.5rem;
+  }
+
+  .user-menu-header {
+    display: flex;
+  }
+}
+
+@media (min-width: 769px) {
+  .user-menu-header {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .notis-dropdown {
+    width: 280px;
+    position: fixed;
+    right: 10px;
+    top: 60px;
+  }
+}

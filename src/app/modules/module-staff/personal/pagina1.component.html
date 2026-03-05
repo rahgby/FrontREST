@@ -1,0 +1,621 @@
+<div class="contenedor-principal">
+
+  <h2>Gestión de Personal</h2>
+
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb custom-breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/pedidos" class="d-flex align-items-center gap-1">
+          <mat-icon class="breadcrumb-icon">home</mat-icon>
+          <span>Inicio</span>
+        </a>
+      </li>
+
+
+
+      <li class="breadcrumb-item">
+        Personal
+      </li>
+
+
+    </ol>
+  </nav>
+
+  <div class="spinner-overlay" *ngIf="(spinnerService.isLoading$ | async)">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+
+
+  <div [class.blur]="(spinnerService.isLoading$ | async)">
+    <!-- Modal para agregar personal -->
+    <ng-template #modalContent>
+      <h2 mat-dialog-title>Agregar Personal</h2>
+      <mat-dialog-content>
+        <form [formGroup]="personalForm" (ngSubmit)="onSubmit()" class="form-container">
+          <div class="form-columns">
+            <div class="form-column">
+              <mat-form-field appearance="fill">
+                <mat-label>Rol</mat-label>
+                <mat-select formControlName="idRol" required>
+                  <mat-option *ngFor="let rol of roles" [value]="rol.idRol">{{ rol.nombre }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Código</mat-label>
+                <input matInput formControlName="codigo" readonly>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Contraseña</mat-label>
+                <input matInput formControlName="password" type="password" required>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Nombre</mat-label>
+                <input matInput formControlName="nombre" required>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Apellido</mat-label>
+                <input matInput formControlName="apellido" required>
+              </mat-form-field>
+            </div>
+
+            <div class="form-column">
+              <mat-form-field appearance="fill">
+                <mat-label>Sueldo (S/)</mat-label>
+                <input matInput type="number" formControlName="sueldo" min="0" step="0.01" required>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Tipo de Documento</mat-label>
+                <mat-select formControlName="tipoDoc" required>
+                  <mat-option *ngFor="let tipo of tiposDocumento" [value]="tipo">{{ tipo }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Documento</mat-label>
+                <input matInput formControlName="documento" required>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Correo</mat-label>
+                <input matInput formControlName="correo" type="email" required>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Teléfono</mat-label>
+                <input matInput formControlName="telefono" required>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <mat-dialog-actions align="end">
+            <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+            <button mat-raised-button type="submit" class="submit-button">Agregar</button>
+          </mat-dialog-actions>
+        </form>
+      </mat-dialog-content>
+    </ng-template>
+
+    <!-- Modal para editar personal -->
+  <!-- Modal para editar personal - MISMO ESTILO QUE AGREGAR -->
+<ng-template #editarModal>
+  <h2 mat-dialog-title>Editar Personal</h2>
+  <mat-dialog-content>
+    <form [formGroup]="editarForm" (ngSubmit)="guardarCambios()" class="form-container">
+      <div class="form-columns">
+        <div class="form-column">
+          <!-- Campo para el Rol -->
+          <mat-form-field appearance="fill">
+            <mat-label>Rol</mat-label>
+            <mat-select formControlName="idRol">
+              <mat-option *ngFor="let rol of roles" [value]="rol.idRol">{{ rol.nombre }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Campo para el Código (solo lectura) -->
+          <mat-form-field appearance="fill">
+            <mat-label>Código</mat-label>
+            <input matInput formControlName="codigo" readonly>
+          </mat-form-field>
+
+          <!-- Campo para la Contraseña con ojo -->
+          <mat-form-field appearance="fill">
+            <mat-label>Contraseña</mat-label>
+            <input 
+              matInput 
+              [type]="hidePassword ? 'password' : 'text'" 
+              formControlName="password" 
+              placeholder="Dejar en blanco para no cambiar">
+            <button 
+              mat-icon-button 
+              matSuffix 
+              (click)="hidePassword = !hidePassword" 
+              [attr.aria-label]="'Mostrar/ocultar contraseña'" 
+              [attr.aria-pressed]="hidePassword"
+              type="button">
+              <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <!-- Campo para el Nombre -->
+          <mat-form-field appearance="fill">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre">
+          </mat-form-field>
+
+          <!-- Campo para el Apellido -->
+          <mat-form-field appearance="fill">
+            <mat-label>Apellido</mat-label>
+            <input matInput formControlName="apellido">
+          </mat-form-field>
+        </div>
+
+        <div class="form-column">
+          <!-- Campo para el Sueldo -->
+          <mat-form-field appearance="fill">
+            <mat-label>Sueldo (S/)</mat-label>
+            <input matInput type="number" formControlName="sueldo" min="0" step="0.01">
+          </mat-form-field>
+
+          <!-- Campo para el Tipo de Documento -->
+          <mat-form-field appearance="fill">
+            <mat-label>Tipo de Documento</mat-label>
+            <mat-select formControlName="tipoDoc">
+              <mat-option *ngFor="let tipo of tiposDocumento" [value]="tipo">{{ tipo }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Campo para el Documento -->
+          <mat-form-field appearance="fill">
+            <mat-label>Documento</mat-label>
+            <input matInput formControlName="documento">
+          </mat-form-field>
+
+          <!-- Campo para el Correo -->
+          <mat-form-field appearance="fill">
+            <mat-label>Correo</mat-label>
+            <input matInput formControlName="correo" type="email">
+          </mat-form-field>
+
+          <!-- Campo para el Teléfono -->
+          <mat-form-field appearance="fill">
+            <mat-label>Teléfono</mat-label>
+            <input matInput formControlName="telefono">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Indicador de contraseña actual (opcional, para mejor UX) -->
+      <div class="current-password-hint" *ngIf="!editarForm.get('password')?.value">
+        <mat-icon color="primary" style="font-size: 16px; width: 16px; height: 16px;">info</mat-icon>
+        <span>Se mantendrá la contraseña actual</span>
+      </div>
+
+      <!-- Botones del modal -->
+      <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+        <button mat-raised-button type="submit" class="submit-button">Guardar Cambios</button>
+      </mat-dialog-actions>
+    </form>
+  </mat-dialog-content>
+</ng-template>
+
+    <!-- Modal para detalles del personal -->
+    <ng-template #detallesModal>
+      <h2 mat-dialog-title>Detalles del Personal</h2>
+      <mat-dialog-content class="details-container">
+        <div class="detail-item">
+          <span class="detail-label">Código:</span>
+          <span class="detail-value">{{ usuarioDetalles?.codigo }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Nombre:</span>
+          <span class="detail-value">{{ usuarioDetalles?.nombre }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Apellido:</span>
+          <span class="detail-value">{{ usuarioDetalles?.apellido }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Rol:</span>
+          <span class="detail-value">{{ usuarioDetalles?.rol }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Sueldo:</span>
+          <span class="detail-value">S/ {{ usuarioDetalles?.sueldo?.toFixed(2) || '0.00' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Tipo Doc:</span>
+          <span class="detail-value">{{ usuarioDetalles?.tipoDoc }} </span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Documento:</span>
+          <span class="detail-value"> {{ usuarioDetalles?.documento }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Contacto:</span>
+          <span class="detail-value">{{ usuarioDetalles?.correo }} / {{ usuarioDetalles?.telefono }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Registro:</span>
+          <span class="detail-value">{{ usuarioDetalles?.fechaRegistro | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close class="close-button">Cerrar</button>
+      </mat-dialog-actions>
+    </ng-template>
+
+    <!-- Modal para recuperar personal -->
+    <ng-template #recuperarModal>
+      <h2 mat-dialog-title>Recuperar Personal</h2>
+      <mat-dialog-content>
+        <div class="inactive-users-container">
+          <table mat-table [dataSource]="usuariosInactivos" class="inactive-users-table">
+            <ng-container matColumnDef="codigo">
+              <th mat-header-cell *matHeaderCellDef>Código</th>
+              <td mat-cell *matCellDef="let element">{{ element.codigo }}</td>
+            </ng-container>
+            <ng-container matColumnDef="nombre">
+              <th mat-header-cell *matHeaderCellDef>Nombre</th>
+              <td mat-cell *matCellDef="let element">{{ element.nombre }}</td>
+            </ng-container>
+            <ng-container matColumnDef="apellido">
+              <th mat-header-cell *matHeaderCellDef>Apellido</th>
+              <td mat-cell *matCellDef="let element">{{ element.apellido }}</td>
+            </ng-container>
+            <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef>Acciones</th>
+              <td mat-cell *matCellDef="let element">
+                <button mat-icon-button (click)="recuperarUsuario(element)" class="restore-icon" matTooltip="Recuperar">
+                  <mat-icon>restore</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="['codigo', 'nombre', 'apellido', 'acciones']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['codigo', 'nombre', 'apellido', 'acciones'];"></tr>
+          </table>
+        </div>
+      </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close class="close-button">Cerrar</button>
+      </mat-dialog-actions>
+    </ng-template>
+
+    <!-- Modal para gestión de propinas -->
+    <ng-template #propinasModal>
+      <h2 mat-dialog-title>Gestión de Propinas</h2>
+      <mat-dialog-content>
+        <div class="tips-management-container">
+          <div class="add-tip-section">
+            <h3>Agregar Nueva Propina</h3>
+            <form [formGroup]="propinaForm" (ngSubmit)="guardarPropina()">
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Usuario</mat-label>
+                <mat-select formControlName="IDUsuario" required>
+                  <mat-option *ngFor="let usuario of meserosActivos" [value]="usuario.idUsuario">
+                    {{ usuario.nombre }} {{ usuario.apellido }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Monto (S/)</mat-label>
+                <input matInput type="number" formControlName="MontoPropina" required min="0" step="0.01">
+              </mat-form-field>
+
+              <div class="form-actions">
+                <button mat-button type="button" mat-dialog-close>Cancelar</button>
+                <button mat-raised-button type="submit" [disabled]="!propinaForm.valid" class="submit-button">
+                  Guardar Propina
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="tips-summary-section">
+            <h3>Resumen de Propinas</h3>
+            <mat-form-field appearance="fill" class="search-field">
+              <mat-label>Buscar usuario</mat-label>
+              <input matInput (keyup)="aplicarFiltroPropinasPorUsuario($event)" placeholder="Filtrar por nombre">
+            </mat-form-field>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="dataSourcePropinasPorUsuario" matSort>
+                <ng-container matColumnDef="nombreUsuario">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
+                  <td mat-cell *matCellDef="let item">{{ item.NombreUsuario }}</td>
+                </ng-container>
+                <ng-container matColumnDef="totalPropinas">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
+                  <td mat-cell *matCellDef="let item">S/ {{ item.TotalPropinas.toFixed(2) }}</td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="['nombreUsuario', 'totalPropinas']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['nombreUsuario', 'totalPropinas'];"></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="tips-details-section">
+            <h3>Detalle de Propinas</h3>
+            <button mat-raised-button color="warn" (click)="eliminarTodasPropinas()" class="delete-all-button"
+              [disabled]="dataSourcePropinas.data.length === 0">
+              <mat-icon>delete_sweep</mat-icon>
+              Eliminar Todas las Propinas
+            </button>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="dataSourcePropinas" matSort>
+                <ng-container matColumnDef="usuarioPropina">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
+                  <td mat-cell *matCellDef="let propina">{{ propina.Usuario }}</td>
+                </ng-container>
+                <ng-container matColumnDef="montoPropina">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Monto</th>
+                  <td mat-cell *matCellDef="let propina">S/ {{ propina.MontoPropina.toFixed(2) }}</td>
+                </ng-container>
+                <ng-container matColumnDef="fechaPropina">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
+                  <td mat-cell *matCellDef="let propina">{{ formatFecha(propina.FechaPropina) }}</td>
+                </ng-container>
+                <ng-container matColumnDef="accionesPropina">
+                  <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                  <td mat-cell *matCellDef="let propina">
+                    <button mat-icon-button (click)="eliminarPropina(propina.IDPropina)" class="delete-icon">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+                <tr mat-header-row
+                  *matHeaderRowDef="['usuarioPropina', 'montoPropina', 'fechaPropina', 'accionesPropina']"></tr>
+                <tr mat-row
+                  *matRowDef="let row; columns: ['usuarioPropina', 'montoPropina', 'fechaPropina', 'accionesPropina'];">
+                </tr>
+              </table>
+              <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+            </div>
+          </div>
+        </div>
+      </mat-dialog-content>
+    </ng-template>
+
+    <ng-template #confirmarEliminarTodasPropinasModal>
+      <h2 mat-dialog-title>Confirmar Eliminación Total</h2>
+      <mat-dialog-content>
+        <p>¿Está seguro que desea eliminar <strong>TODAS</strong> las propinas?</p>
+        <p class="warning-text">Esta acción no se puede deshacer y eliminará permanentemente todos los registros de
+          propinas.</p>
+      </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>Cancelar</button>
+        <button mat-raised-button color="warn" (click)="confirmarEliminacionTodasPropinas()">Eliminar Todas</button>
+      </mat-dialog-actions>
+    </ng-template>
+
+    <!-- Modal de confirmación para eliminar propina -->
+    <ng-template #confirmarEliminarPropinaModal>
+      <h2 mat-dialog-title>Confirmar Eliminación</h2>
+      <mat-dialog-content>
+        ¿Está seguro que desea eliminar esta propina?
+      </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>Cancelar</button>
+        <button mat-raised-button color="warn" (click)="confirmarEliminacionPropina()">Eliminar</button>
+      </mat-dialog-actions>
+    </ng-template>
+
+    <!-- Modal para gestión de sueldos -->
+    <ng-template #sueldosModal>
+      <h2 mat-dialog-title>Gestión de Sueldos</h2>
+      <mat-dialog-content>
+        <div class="salary-management-container">
+          <mat-form-field appearance="fill" class="search-field">
+            <mat-label>Buscar personal</mat-label>
+            <input matInput (keyup)="aplicarFiltroSueldos($event)" placeholder="Filtrar por nombre">
+          </mat-form-field>
+
+          <div class="table-container">
+            <table mat-table [dataSource]="plantillaSueldos" matSort>
+              <ng-container matColumnDef="usuario">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Personal</th>
+                <td mat-cell *matCellDef="let item">{{ item.usuario }}</td>
+              </ng-container>
+              <ng-container matColumnDef="sueldoBase">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Sueldo Base</th>
+                <td mat-cell *matCellDef="let item">S/ {{ item.sueldoBase.toFixed(2) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="totalPropinas">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Propinas</th>
+                <td mat-cell *matCellDef="let item">S/ {{ item.totalPropinas.toFixed(2) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="sueldoNeto">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Sueldo Neto</th>
+                <td mat-cell *matCellDef="let item">S/ {{ item.sueldoNeto.toFixed(2) }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['usuario', 'sueldoBase', 'totalPropinas', 'sueldoNeto']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['usuario', 'sueldoBase', 'totalPropinas', 'sueldoNeto'];"></tr>
+            </table>
+          </div>
+        </div>
+      </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>Cerrar</button>
+      </mat-dialog-actions>
+    </ng-template>
+
+    <!-- Contenido principal -->
+    <div class="content-wrapper">
+      <div class="header-section">
+
+
+
+        <div class="action-buttons">
+          <button mat-raised-button (click)="openModal()" class="action-button primary">
+            <mat-icon>person_add</mat-icon>
+            Agregar Personal
+          </button>
+          <button mat-raised-button (click)="openRecuperarModal()" class="action-button secondary">
+            <mat-icon>restore</mat-icon>
+            Recuperar Personal
+          </button>
+          <button mat-raised-button routerLink="/pages/staff/area" class="action-button secondary">
+            <mat-icon>assignment_ind</mat-icon>
+            Crear Área
+          </button>
+
+
+          <button mat-raised-button routerLink="/pages/staff/descanso" class="action-button tertiary">
+            <mat-icon>free_breakfast</mat-icon>
+            Asignar Descanso
+          </button>
+          <button mat-raised-button (click)="abrirModalPropinas()" class="action-button tertiary">
+            <mat-icon>attach_money</mat-icon>
+            Gestionar Propinas
+          </button>
+          <button mat-raised-button (click)="abrirModalSueldos()" class="action-button tertiary">
+            <mat-icon>payments</mat-icon>
+            Ver Sueldos
+          </button>
+
+
+        </div>
+        <div class="search-section">
+
+          <mat-form-field appearance="outline" class="custom-search-field">
+            <mat-icon matPrefix>search</mat-icon>
+            <mat-label>Buscar personal</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Nombre, código, documento...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </div>
+
+      </div>
+
+      <div class="table-section">
+        <div class="table-responsive minimalist-table">
+          <table mat-table [dataSource]="dataSource" matSort class="table">
+            <ng-container matColumnDef="codigo">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
+              <td mat-cell *matCellDef="let element">{{ element.codigo }}</td>
+            </ng-container>
+            <ng-container matColumnDef="nombre">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+              <td mat-cell *matCellDef="let element">{{ element.nombre }}</td>
+            </ng-container>
+            <ng-container matColumnDef="apellido">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Apellido</th>
+              <td mat-cell *matCellDef="let element">{{ element.apellido }}</td>
+            </ng-container>
+            <ng-container matColumnDef="rol">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
+              <td mat-cell *matCellDef="let element">{{ element.rol }}</td>
+            </ng-container>
+            <ng-container matColumnDef="sueldo">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Sueldo</th>
+              <td mat-cell *matCellDef="let element">S/ {{ element.sueldo?.toFixed(2) || '0.00' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="documento">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Documento</th>
+              <td mat-cell *matCellDef="let element">{{ element.tipoDoc }} {{ element.documento }}</td>
+            </ng-container>
+            <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef class="actions-header">Acciones</th>
+              <td mat-cell *matCellDef="let element" class="actions-cell">
+                <button mat-icon-button (click)="verDetalles(element)" class="action-icon view"
+                  matTooltip="Ver detalles">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button (click)="abrirModalEditar(element)" class="action-icon edit"
+                  matTooltip="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+
+                <button mat-icon-button (click)="abrirModal(element.idUsuario)" class="action-icon view"
+                  matTooltip="Ver detalles">
+                  <mat-icon>location_on</mat-icon>
+                </button>
+                
+                <button mat-icon-button *ngIf="element.id !== user?.idUsuario && element.rol !== 'Administrador'"
+                  (click)="eliminarUsuario(element)" class="action-icon delete" matTooltip="Eliminar">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr mat-header-row
+              *matHeaderRowDef="['codigo', 'nombre', 'apellido', 'rol', 'sueldo', 'documento', 'acciones']"></tr>
+            <tr mat-row
+              *matRowDef="let row; columns: ['codigo', 'nombre', 'apellido', 'rol', 'sueldo', 'documento', 'acciones'];">
+            </tr>
+          </table>
+          <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
+        </div>
+      </div>
+
+      <!-- Sección de áreas asignadas -->
+      <div class="assigned-sections">
+        <div class="assigned-areas">
+          <h2 class="section-title">
+            <mat-icon class="section-icon">location_on</mat-icon>
+            Áreas Asignadas
+          </h2>
+
+          <div class="areas-grid">
+            <div class="area-card" *ngFor="let area of areas">
+              <div class="area-header">
+                <mat-icon class="area-icon">{{ obtenerIcono(area.nombre) }}</mat-icon>
+                <h3 class="area-name">{{ area.nombre }}</h3>
+              </div>
+
+              <!-- Lista de usuarios asignados -->
+              <div *ngIf="area.usuariosArea && area.usuariosArea.length > 0" class="staff-list">
+                <ul>
+                  <li *ngFor="let usuario of area.usuariosArea">
+                    {{ usuario.nombre }}
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Mensaje si no hay usuarios -->
+              <div *ngIf="!area.usuariosArea || area.usuariosArea.length === 0" class="no-staff">
+                Sin personal asignado
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Sección de días de descanso -->
+        <div class="assigned-days">
+          <h2 class="section-title">
+            <mat-icon class="section-icon">beach_access</mat-icon>
+            Días de Descanso
+          </h2>
+          <div class="days-grid">
+            <div class="day-card" *ngFor="let dia of dias">
+              <div class="day-header">
+                <mat-icon class="day-icon">calendar_today</mat-icon>
+                <h3 class="day-name">{{ dia.nombre }}</h3>
+              </div>
+              <div *ngIf="tieneUsuariosDia(dia.nombre)" class="staff-list">
+                <ul>
+                  <li *ngFor="let usuario of obtenerUsuariosDelDia(dia.nombre)">
+                    {{ usuario.nombre }} {{ usuario.apellido }}
+                  </li>
+                </ul>
+              </div>
+              <div *ngIf="!tieneUsuariosDia(dia.nombre)" class="no-staff">
+                Sin personal asignado
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

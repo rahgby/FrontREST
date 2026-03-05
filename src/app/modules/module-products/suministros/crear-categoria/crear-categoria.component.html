@@ -1,0 +1,72 @@
+<h2 mat-dialog-title>Crear Nueva Categoría</h2>
+
+<mat-dialog-content>
+  <form #categoriaForm="ngForm" (ngSubmit)="guardarCategoria()">
+    
+    <!-- Nombre de la categoría -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre de la Categoría</mat-label>
+      <input 
+        matInput 
+        type="text" 
+        [(ngModel)]="categoria.nombre" 
+        name="nombre" 
+        required 
+        maxlength="50"
+        placeholder="Ej: Lácteos, Carnes, Bebidas, etc."
+      />
+      <mat-hint align="end">{{categoria.nombre?.length || 0}}/50</mat-hint>
+    </mat-form-field>
+
+    <!-- Descripción (opcional) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descripción (Opcional)</mat-label>
+      <textarea 
+        matInput 
+        [(ngModel)]="categoria.descripcion" 
+        name="descripcion" 
+        rows="3"
+        maxlength="200"
+      ></textarea>
+      <mat-hint align="end">{{categoria.descripcion?.length || 0}}/200</mat-hint>
+    </mat-form-field>
+
+    <!-- Botones -->
+    <mat-dialog-actions align="end">
+      <button mat-raised-button color="warn" type="button" (click)="cerrarModal()">
+        Cancelar
+      </button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="categoriaForm.invalid">
+        <mat-icon>save</mat-icon> Guardar
+      </button>
+    </mat-dialog-actions>
+
+  </form>
+</mat-dialog-content>
+
+<style>
+  .full-width {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  mat-dialog-content {
+    min-width: 300px;
+  }
+
+  @media (max-width: 600px) {
+    mat-dialog-content {
+      padding: 12px;
+    }
+
+    mat-dialog-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 8px;
+    }
+  }
+</style>

@@ -1,0 +1,118 @@
+<div class="boleta-container mat-elevation-z4">
+  <!-- Encabezado -->
+  <div class="boleta-header">
+    <h2 class="text-center">{{data.nombreRestaurante}}</h2>
+    <p class="text-center">{{data.direccion}}</p>
+    <p class="text-center">RUC: {{data.ruc}}</p>
+    <mat-divider></mat-divider>
+  </div>
+
+  <!-- Información de la transacción -->
+  <div class="transaction-info">
+    <div class="info-row">
+  <span><strong>Boleta:</strong> {{data.numeroBoleta}}</span>
+  <span><strong>Fecha:</strong> {{data.fecha.split(',')[0]}}</span>
+  <span><strong>Hora:</strong> {{data.fecha.split(',')[1]?.trim()}}</span>
+</div>
+    <div class="info-row">
+      <span><strong>Cliente:</strong> {{data.nombreCliente || 'Consumidor Final'}}</span>
+<span>
+  <span *ngIf="data.documentoCliente; else noDocumento">
+    <strong>{{data.tipoDocumentoCliente || 'DNI'}}:</strong> {{data.documentoCliente}}
+  </span>
+  <ng-template #noDocumento>N/A</ng-template>
+</span>      <span><strong>Mesa:</strong> {{data.mesa || 'N/A'}}</span>
+    </div>
+    <div *ngIf="data.usuario" class="info-row">
+      <span><strong>Atendido por:</strong> {{data.usuario}}</span>
+    </div>
+    <mat-divider></mat-divider>
+  </div>
+
+  <!-- Detalle de productos con scroll -->
+  <div class="productos-container scrollable-content">
+    <div class="productos-header">
+      <span class="desc-col"><strong>DESCRIPCIÓN</strong></span>
+      <span class="cant-col"><strong>CANT.</strong></span>
+      <span class="price-col"><strong>P. UNIT.</strong></span>
+      <span class="total-col"><strong>TOTAL</strong></span>
+    </div>
+
+    <div *ngFor="let item of data.items" class="producto-item">
+      <!-- Producto principal -->
+      <div class="producto-main">
+        <span class="desc-col">{{item.nombre}}</span>
+        <span class="cant-col">{{item.cantidad}}</span>
+        <span class="price-col">S/ {{(item.precio) | number:'1.2-2'}}</span>
+        <span class="total-col">S/ {{(item.precio * item.cantidad) | number:'1.2-2'}}</span>
+      </div>
+
+      <!-- Adicionales -->
+      <div *ngIf="item.adicionales && item.adicionales.length > 0" class="adicionales-container">
+        <div *ngFor="let adicional of item.adicionales" class="adicional-item">
+          <span class="desc-col">+ {{adicional.nombre}}</span>
+          <span class="cant-col">{{adicional.cantidad}}</span>
+          <span class="price-col">S/ {{(adicional.precio) | number:'1.2-2'}}</span>
+          <span class="total-col">S/ {{(adicional.precio * adicional.cantidad) | number:'1.2-2'}}</span>
+        </div>
+      </div>
+
+      <!-- Comentario -->
+      <div *ngIf="item.comentario" class="comentario-item">
+        <span class="desc-col">Nota: {{item.comentario}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Totales -->
+  <div class="totales-container">
+    <mat-divider></mat-divider>
+    <div class="total-row">
+      <span>SUBTOTAL:</span>
+      <span>S/ {{data.subtotalNeto | number:'1.2-2'}}</span>
+    </div>
+    <div class="total-row">
+      <span>IGV (18%):</span>
+      <span>S/ {{data.igv | number:'1.2-2'}}</span>
+    </div>
+    <div class="total-row">
+      <span>TOTAL NETO:</span>
+      <span>S/ {{data.totalNetoConIgv | number:'1.2-2'}}</span>
+    </div>
+    
+    <!-- Propina - Mostrar solo si es mayor a 0 -->
+   <div *ngIf="data.propina !== undefined && data.propina > 0" class="total-row">
+    <span>PROPINA:</span>
+    <span>S/ {{data.propina | number:'1.2-2'}}</span>
+  </div>
+  
+    <div *ngIf="data.metodoPago.toLowerCase() === 'tarjeta'" class="total-row">
+      <span>COMISIÓN TARJETA (5%):</span>
+      <span>S/ {{data.comisionTarjeta | number:'1.2-2'}}</span>
+    </div>
+    <div class="total-row final-total">
+      <span><strong>TOTAL:</strong></span>
+      <span><strong>S/ {{data.total | number:'1.2-2'}}</strong></span>
+    </div>
+    <div class="payment-method">
+      <span><strong>Método de pago:</strong> {{data.metodoPago | uppercase}}</span>
+    </div>
+  </div>
+
+  <!-- Pie de página -->
+  <div class="footer">
+    <mat-divider></mat-divider>
+    <p class="text-center">¡Gracias por su preferencia!</p>
+    <p class="text-center">Vuelva pronto</p>
+  </div>
+
+  <!-- Acciones -->
+  <mat-dialog-actions align="end" class="actions-container">
+    <button mat-button (click)="onClose()" class="close-btn">
+      <mat-icon>close</mat-icon> Cerrar
+    </button>
+    <button mat-raised-button color="primary" (click)="imprimirBoleta()" class="print-btn">
+      <mat-icon>print</mat-icon> Imprimir
+    </button>
+  </mat-dialog-actions>
+</div>

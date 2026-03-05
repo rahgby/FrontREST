@@ -1,0 +1,76 @@
+<div id="casilla-superior" #casillaSuperior class="casilla">
+    <mat-icon (click)="retroceder()" class="icono-retroceder">arrow_back</mat-icon>
+    <button mat-raised-button color="primary" (click)="enviarWhatsApp()" class="boton-enviar">
+        <mat-icon>send</mat-icon> Enviar a WhatsApp
+    </button>
+</div>
+
+<div id="casilla-inferior" class="casilla">
+  <!-- Contador de mesas simple -->
+  <div class="contador-total-mesas" *ngIf="totalMesas > 0">
+    <div class="contador-contenido">
+      <mat-icon>table_bar</mat-icon>
+      <span class="contador-texto">
+        Total de Mesas: <strong>{{ totalMesas }}</strong>
+      </span>
+      <span class="contador-areas" *ngIf="areas.length > 0">
+        | Distribuidas en {{ areas.length }} área{{ areas.length !== 1 ? 's' : '' }}
+      </span>
+    </div>
+  </div>
+  
+  <!-- Botón Agregar Nueva Área -->
+  <div class="acciones-areas-derecha">
+    <button mat-raised-button color="accent" (click)="abrirModalAgregarArea()" class="boton-agregar-area">
+      <mat-icon>add_location</mat-icon>
+      Agregar Nueva Área
+      <span class="badge-mesas" *ngIf="totalMesas > 0">
+        {{ totalMesas }}
+      </span>
+    </button>
+  </div>
+  
+  <div class="tabla">
+    <div class="area-container" *ngFor="let area of areas">
+      <div class="area-header">
+        <div class="area-info">
+          <mat-icon class="area-icon">{{ obtenerIconoArea(area.nombre) }}</mat-icon>
+          <span class="area-nombre">{{ area.nombre }}</span>
+          <span class="contador-mesas-area" *ngIf="mesasPorArea(area.idArea).length > 0">
+            ({{ mesasPorArea(area.idArea).length }} mesa{{ mesasPorArea(area.idArea).length !== 1 ? 's' : '' }})
+          </span>
+        </div>
+        <div class="area-actions">
+          <button mat-mini-fab color="primary" (click)="agregarMesa(area)" class="boton-agregar-mesa">
+            <mat-icon>add</mat-icon>
+          </button>
+          <button mat-mini-fab color="warn" 
+                  (click)="eliminarArea(area.idArea, $event)"
+                  class="boton-eliminar-area"
+                  matTooltip="Eliminar área">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="area-columna" [attr.data-area]="area.nombre">
+        <!-- Mesas existentes -->
+        <div *ngFor="let mesa of mesasPorArea(area.idArea)" class="mesa" [attr.data-mesa-id]="mesa.idMesa">
+          <span>{{ mesa.nombre }}</span>
+          <button mat-icon-button color="warn" (click)="eliminarMesa(mesa.idMesa, $event)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+        
+        <!-- Mensaje si no hay mesas -->
+        <div *ngIf="mesasPorArea(area.idArea).length === 0" class="sin-mesas">
+          <p>No hay mesas en esta área</p>
+          <button mat-button color="primary" (click)="agregarMesa(area)">
+            <mat-icon>add</mat-icon>
+            Agregar primera mesa
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>

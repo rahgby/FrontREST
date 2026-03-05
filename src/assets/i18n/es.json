@@ -1,0 +1,18 @@
+{
+  "menu": {
+    "home": "Inicio",
+    "api": "Ejemplo de API",
+    "page1": "Página 1",
+    "pagina1": "Pagina a1",
+    "pagina2": "Pagina a2"
+  },
+  "pages": {
+    "auth": {
+      "login": "Ingresar con oAuth2",
+      "logout": "Salir de oAuth2"
+    },
+    "api": {
+      "search": "Buscar"
+    }
+  }
+}

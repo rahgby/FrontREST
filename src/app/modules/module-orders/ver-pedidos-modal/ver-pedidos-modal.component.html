@@ -1,0 +1,96 @@
+<h2 mat-dialog-title class="dialog-header">Detalles de la Orden</h2>
+
+<mat-dialog-content class="dialog-content">
+  <!-- Información general -->
+  <div class="order-info">
+    <div class="info-row">
+      <span class="info-label">Cliente:</span>
+      <span class="info-value">{{ data.nombreCliente }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Mesero:</span>
+      <span class="info-value">{{ data.usuario }}</span>
+    </div>
+     <div class="info-row">
+      <span class="info-label">Mesa:</span>
+      <span class="info-value">{{ data.mesa }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Fecha/Hora:</span>
+      <span class="info-value">{{ data.fechaRegistro | date:'dd/MM/yyyy HH:mm' }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Orden:</span>
+      <span class="info-value order-number">#{{ data.idPedido }}</span>
+    </div>
+  </div>
+
+  <mat-divider class="divider"></mat-divider>
+
+  <!-- Lista de platillos -->
+  <div class="dishes-container" *ngFor="let detalle of data.detallePedido">
+    <div class="dish-card">
+      <div class="dish-header">
+        <h3 class="dish-name">{{ detalle.plato }}</h3>
+        <span class="dish-price">{{ detalle.precio | currency:'S/ ' }}</span>
+      </div>
+
+      <div class="dish-details">
+        <div class="detail-row">
+          <span>Cantidad:</span>
+          <strong>{{ detalle.cantidad }}</strong>
+        </div>
+
+        <div *ngIf="detalle.tipoPapas" class="detail-row">
+          <span>Tipo de papa:</span>
+          <strong>{{ detalle.tipoPapas }}</strong>
+        </div>
+
+        <div *ngIf="detalle.sabor" class="detail-row">
+          <span>Sabor:</span>
+          <strong>{{ detalle.sabor }}</strong>
+        </div>
+
+        <!-- Extras -->
+        <div class="extras-section" *ngIf="detalle.detallePedidoAdicional?.length">
+          <span class="section-label">Extras:</span>
+          <div class="extras-list">
+            <div class="extra-item" *ngFor="let extra of detalle.detallePedidoAdicional">
+              <span class="extra-quantity">{{extra.cantidad}}x</span>
+              <span class="extra-name">{{ extra.adicional }}</span>
+              <span class="extra-price">{{ extra.precio | currency:'S/ ' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comentario -->
+        <div class="comment-section" *ngIf="detalle.comentario">
+          <span class="section-label">Comentario:</span>
+          <p class="comment-text">{{ detalle.comentario }}</p>
+        </div>
+
+        <div class="subtotal-row">
+          <span>Subtotal:</span>
+          <strong>{{ detalle.subtotal | currency:'S/ ' }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <mat-divider class="divider"></mat-divider>
+  </div>
+
+  <!-- Total -->
+  <div *ngIf="esAdministrador()" class="total-section">
+    <div class="total-row">
+      <span class="total-label">Total:</span>
+      <span class="total-amount">{{ data.monto | currency:'S/ ' }}</span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions  *ngIf="esAdministrador()" align="end" class="dialog-actions">
+  <button mat-stroked-button (click)="imprimir()">
+    <mat-icon>print</mat-icon> Imprimir
+  </button>
+  <button mat-raised-button color="primary" (click)="cerrar()">Cerrar</button>
+</mat-dialog-actions>

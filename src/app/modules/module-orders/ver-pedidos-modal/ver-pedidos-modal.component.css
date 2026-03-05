@@ -1,0 +1,167 @@
+/* Estilos generales */
+.dialog-header {
+  padding: 16px 24px;
+  margin: 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.dialog-content {
+  padding: 20px 24px;
+}
+
+/* Información de la orden */
+.order-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+}
+
+.info-label {
+  min-width: 100px;
+  color: #666;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #333;
+}
+
+.order-number {
+  color: #3f51b5;
+  font-weight: 500;
+}
+
+/* Divisor */
+.divider {
+  margin: 16px 0;
+  border-top-color: #f0f0f0;
+}
+
+/* Tarjeta de platillo */
+.dish-card {
+  margin-bottom: 16px;
+}
+
+.dish-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.dish-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.dish-price {
+  font-weight: 500;
+  color: #e91e63;
+}
+
+/* Detalles del platillo */
+.dish-details {
+  margin-left: 8px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 0;
+}
+
+/* Sección de extras */
+.extras-section {
+  margin: 8px 0 8px 16px;
+}
+
+.section-label {
+  font-weight: 500;
+  color: #666;
+}
+
+.extras-list {
+  margin-top: 4px;
+}
+
+.extra-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  padding: 4px 0;
+}
+
+.extra-quantity {
+  color: #666;
+}
+
+.extra-name {
+  flex-grow: 1;
+}
+
+.extra-price {
+  font-weight: 500;
+}
+
+/* Comentario */
+.comment-section {
+  margin: 8px 0 8px 16px;
+}
+
+.comment-text {
+  margin: 4px 0 0 16px;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Subtotales y totales */
+.subtotal-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #e0e0e0;
+  font-weight: 500;
+}
+
+.total-section {
+  margin-top: 16px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.total-label {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.total-amount {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #3f51b5;
+}
+
+/* Acciones del diálogo */
+.dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+}

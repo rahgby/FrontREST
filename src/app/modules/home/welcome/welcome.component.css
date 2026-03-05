@@ -1,0 +1,39 @@
+.container {
+  margin-top: 0; 
+  padding-top: 0; 
+}
+.card {
+  border-radius:0px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.card-header {
+  font-size: 1.2rem;
+}
+.card-body p {
+  font-size: 0.9rem;
+}
+.hover-zoom:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease-in-out;
+}
+.welcome-title {
+font-family: 'Arial', sans-serif; 
+font-size: 2rem; 
+color: #000000; 
+font-weight: 600; 
+letter-spacing: 2px; 
+text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+margin: 0;
+padding-bottom:35px;
+text-align: left;
+}
+.card-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9rem;
+  color: #555;
+}
+

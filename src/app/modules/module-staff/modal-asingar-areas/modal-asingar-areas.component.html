@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>
+    <mat-icon class="me-1">location_on</mat-icon>
+    Asignar áreas
+  </h2>
+  
+  <mat-dialog-content class="content">
+  
+    <ng-container *ngIf="areasTotales.length; else loading">
+      <mat-selection-list [(ngModel)]="areasSeleccionadas">
+        <mat-list-option
+          *ngFor="let area of areasTotales"
+          [value]="area.idArea"
+          [selected]="estaAsignada(area.idArea)">
+          {{ area.nombre }}
+        </mat-list-option>
+      </mat-selection-list>
+    </ng-container>
+  
+    <ng-template #loading>
+      <div class="text-center py-3">
+        <mat-spinner diameter="30"></mat-spinner>
+      </div>
+    </ng-template>
+  
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cerrar()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="guardar()">
+      Guardar
+    </button>
+  </mat-dialog-actions>

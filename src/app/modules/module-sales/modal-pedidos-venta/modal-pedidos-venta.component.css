@@ -1,0 +1,310 @@
+/* --- Contenedor Principal --- */
+.modal-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 85vh;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+}
+
+/* --- HEADER --- */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.header-info h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #2c3e50;
+}
+
+.header-info .fecha-registro {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    margin-left: 34px;
+}
+
+.header-total {
+    text-align: right;
+    margin-right: 20px;
+}
+
+.header-total .label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #7f8c8d;
+    letter-spacing: 1px;
+}
+
+.header-total .amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #27ae60;
+}
+
+/* --- BODY --- */
+.modal-body {
+    padding: 0;
+    overflow-y: auto;
+    flex: 1;
+    background-color: #fff;
+}
+
+/* Spinner y Empty State */
+.loading-state,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    color: #95a5a6;
+}
+
+/* --- Bloque de cada Pedido --- */
+.pedido-block {
+    padding: 15px 24px 0;
+}
+
+.pedido-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.badge-nro {
+    background: #2c3e50;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.meta-user {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+}
+
+.tiny-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.meta-status {
+    background: #e1f5fe;
+    color: #0288d1;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+}
+
+.meta-status.anulado {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.meta-time {
+    margin-left: auto;
+    color: #95a5a6;
+}
+
+/* --- LISTA DE ITEMS --- */
+.detalles-list {
+    border-left: 2px solid #eee;
+    margin-left: 10px;
+    padding-left: 15px;
+}
+
+.detalle-item { margin-bottom: 12px; }
+
+.item-row {
+    display: flex;
+    align-items: flex-start;
+    font-size: 1rem;
+}
+
+.qty {
+    font-weight: 700;
+    width: 30px;
+    color: #2c3e50;
+}
+
+.desc {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.plato-name { font-weight: 500; }
+
+.sabor-tag {
+    color: #e67e22;
+    font-style: italic;
+    margin-left: 5px;
+}
+
+.promo-tag {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 0 4px;
+    font-size: 0.75rem;
+    border-radius: 3px;
+    margin-left: 5px;
+    border: 1px solid #ffeeba;
+}
+
+.price {
+    font-weight: 600;
+    min-width: 70px;
+    text-align: right;
+}
+
+/* Comentarios y Adicionales */
+.item-meta {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    margin-left: 30px;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.item-meta mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+.adicionales-container {
+    margin-top: 4px;
+    margin-left: 30px;
+    background-color: #fafafa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px dashed #e0e0e0;
+}
+
+.adicional-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #555;
+    margin-bottom: 2px;
+}
+
+.adi-name {
+    flex: 1;
+    margin-left: 8px;
+}
+
+/* Separador visual entre pedidos */
+.pedido-divider {
+    height: 1px;
+    background-color: #eee;
+    margin: 15px 0;
+}
+
+.pedido-block:last-child .pedido-divider { display: none; }
+
+.modal-footer {
+    padding: 15px 24px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    background: #fff;
+}
+
+/* --- RESUMEN ECONÓMICO --- */
+.resumen-economico {
+    background-color: #fafafa; /* Gris muy suave para diferenciar */
+    border-top: 1px solid #e0e0e0;
+    padding: 20px 24px;
+    margin-top: 10px;
+    border-bottom: 1px dashed #ccc; /* Efecto corte de ticket */
+}
+
+.resumen-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: #555;
+    font-family: 'Roboto', sans-serif;
+}
+
+.resumen-row .label {
+    display: flex;
+    align-items: center;
+    gap: 6px; /* Espacio entre icono y texto */
+}
+
+.resumen-row .value {
+    font-weight: 500;
+    min-width: 90px;
+    text-align: right;
+    letter-spacing: 0.5px;
+}
+
+/* --- Estilos específicos por tipo --- */
+
+/* Iconos pequeños (moto, etiqueta) */
+.resumen-row .tiny-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #7f8c8d;
+    vertical-align: middle;
+}
+
+/* Descuento (Rojo suave) */
+.resumen-row.descuento {
+    color: #c0392b; 
+}
+.resumen-row.descuento .value {
+    font-weight: 600;
+}
+
+/* Divisor antes del total */
+.resumen-divider {
+    height: 1px;
+    background-color: #ddd;
+    margin: 12px 0;
+    width: 100%;
+}
+
+/* Total Final (Grande y Verde) */
+.resumen-row.total {
+    margin-top: 5px;
+    margin-bottom: 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.resumen-row.total .label {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.resumen-row.total .value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #27ae60; /* Verde éxito */
+}

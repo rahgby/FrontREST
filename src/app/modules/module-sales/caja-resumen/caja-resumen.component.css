@@ -1,0 +1,107 @@
+.resumen-container {
+    padding: 16px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #4caf50;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.ticket-style {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.dashed-line {
+    border: none;
+    border-top: 2px dashed #ccc;
+    margin: 15px 0;
+}
+
+.date-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.label { color: #888; }
+.val { font-weight: 500; }
+
+.money-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    text-align: center;
+}
+
+.money-item small {
+    display: block;
+    color: #777;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+}
+
+.money-item p {
+    font-weight: bold;
+    margin: 5px 0 0;
+    font-size: 1rem;
+}
+
+.totals-section .row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.net-value { color: #2196f3; font-weight: bold; }
+
+.total-row {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    font-weight: bold;
+    font-size: 1.2rem !important;
+}
+
+.final-value {
+    color: #000;
+}
+
+.propina-box {
+    margin-top: 15px;
+    background: #e8f5e9;
+    padding: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.center-box {
+    text-align: center;
+    padding: 40px;
+}
+
+@media print {
+    .actions, .header-icon, button { display: none !important; }
+    .ticket-style { border: none; background: white; }
+    .resumen-container { width: 100%; }
+}

@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Crear Documento</h2>
+<mat-dialog-content>
+  <p>¿Quieres crear una boleta o factura?</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <!-- Botón para crear boleta -->
+  <button mat-raised-button color="primary" (click)="crearBoleta()">
+    <mat-icon>receipt</mat-icon> Boleta
+  </button>
+
+  <!-- Botón para crear factura -->
+  <button mat-raised-button color="accent" (click)="crearFactura()">
+    <mat-icon>description</mat-icon> Factura
+  </button>
+
+  <!-- Botón para cerrar el diálogo -->
+  <button mat-icon-button (click)="cerrar()">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-dialog-actions>

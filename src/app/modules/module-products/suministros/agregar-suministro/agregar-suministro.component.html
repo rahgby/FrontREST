@@ -1,0 +1,69 @@
+<h2 mat-dialog-title>Agregar Suministro</h2>
+
+<mat-dialog-content>
+  <form #suministroForm="ngForm" (ngSubmit)="guardarSuministro()">
+    
+    <!-- Nombre -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre</mat-label>
+      <input matInput type="text" [(ngModel)]="suministro.nombre" name="nombre" required />
+    </mat-form-field>
+
+    <!-- Stock -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Stock</mat-label>
+      <input matInput type="number" [(ngModel)]="suministro.stock" name="stock" required />
+    </mat-form-field>
+
+    <!-- Unidad -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Unidad</mat-label>
+      <mat-select [(ngModel)]="suministro.unidad" name="unidad" required>
+        <mat-option value="Unidad">Unidad</mat-option>
+        <mat-option value="Kg">Kilogramos</mat-option>
+        <mat-option value="Litros">Litros</mat-option>
+        <mat-option value="Caja">Caja</mat-option>
+        <mat-option value="Paquete">Paquete</mat-option>
+        <mat-option value="Soles">Soles</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Categoría -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Categoría</mat-label>
+      <mat-select [(ngModel)]="suministro.idCategoria" name="idCategoria" required>
+        <mat-option *ngFor="let categoria of data.categorias" [value]="categoria.idCategoria">
+          {{ categoria.nombre }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Botones -->
+    <mat-dialog-actions align="end">
+      <button mat-raised-button color="warn" type="button" (click)="cerrarModal()">Cancelar</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="suministroForm.invalid">
+        Guardar
+      </button>
+    </mat-dialog-actions>
+
+  </form>
+</mat-dialog-content>
+
+<!-- Responsividad para pantallas pequeñas -->
+<style>
+  @media (max-width: 600px) {
+    mat-dialog-content {
+      padding: 12px;
+    }
+
+    mat-dialog-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 8px;
+    }
+  }
+</style>

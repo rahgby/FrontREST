@@ -1,0 +1,119 @@
+<div class="dialog-container">
+    <div class="dialog-header">
+        <div class="mesa-badge">
+            {{ isDelivery ? 'Delivery' : 'Mesa #' + idMesa }}
+        </div>
+        <h2 class="header-title">Confirmar Comanda</h2>
+
+        <button class="btn-close" (click)="cancelar()">
+
+        </button>
+    </div>
+
+    <mat-dialog-content class="pedido-body">
+        <div *ngFor="let item of seleccionados" class="item-card" [class.item-configurado]="item.esPersonalizado">
+
+            <div class="item-main-row">
+                <div class="item-info">
+                    <div class="cantidad-control scale-sm">
+                        <button mat-icon-button color="warn" (click)="cambiarCantidadPlato(item, -1)">
+                            <mat-icon>{{ item.cantidad > 1 ? 'remove_circle_outline' : 'delete_outline' }}</mat-icon>
+                        </button>
+                        <span class="count-text">{{ item.cantidad }}</span>
+                        <button mat-icon-button color="primary" (click)="cambiarCantidadPlato(item, 1)">
+                            <mat-icon>add_circle_outline</mat-icon>
+                        </button>
+                    </div>
+                    <span class="item-name">{{ item.nombre }}</span>
+                </div>
+                <div class="item-total-price">
+                    {{ (item.precio + calcularExtras(item)) * item.cantidad | currency:'S/.' }}
+                </div>
+
+                <div class="item-subtotal-info" *ngIf="calcularExtras(item) > 0">
+                    <small class="text-muted">Base: {{ item.precio | currency:'S/.' }}</small>
+                    <small class="text-success"> + Extras: {{ calcularExtras(item) | currency:'S/.' }}</small>
+                </div>
+            </div>
+
+            <div class="options-grid"
+            *ngIf="
+            (saboresMap[item.idPlato] || []).length > 0
+            || (item.categoria ?? '').toLowerCase().includes('hamburguesa')
+          ">
+                <div class="custom-input-group" *ngIf="(saboresMap[item.idPlato] || []).length > 0">
+                    <label>Sabor/Salsa</label>
+                    <select [(ngModel)]="item.idSabor" class="modern-select">
+                        <option *ngFor="let sabor of saboresMap[item.idPlato]" [value]="sabor.idSabor">
+                            {{ sabor.nombre }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="custom-input-group"  *ngIf="
+            (item.categoria ?? '').toLowerCase().includes('hamburguesa')
+              " >
+                    <label>Papas</label>
+                    <select [(ngModel)]="item.tipoPapas" class="modern-select">
+                        <option value="fritas">Fritas</option>
+                        <option value="al hilo">Al Hilo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="extras-wrapper" *ngIf="(item.detallePedidoAdicional?.length || 0) > 0">
+                <div class="extras-header">
+                    <hr><span>EXTRAS EDITABLES</span>
+                    <hr>
+                </div>
+
+                <div class="extras-editable-list">
+                    <div class="extra-edit-row" *ngFor="let ad of item.detallePedidoAdicional">
+                        <div class="extra-left">
+                            <mat-icon class="sub-icon">subdirectory_arrow_right</mat-icon>
+
+                            <div class="mini-switch">
+                                <button (click)="cambiarCantidadAdicional(item, ad, -1)">-</button>
+                                <span>{{ ad.cantidad }}</span>
+                                <button (click)="cambiarCantidadAdicional(item, ad, 1)">+</button>
+                            </div>
+
+                            <span class="ex-name">{{ ad.adicional }}</span>
+                        </div>
+                        <span class="ex-price">+{{ (ad.precio * ad.cantidad) | currency:'S/.' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="item-notes">
+                <mat-icon>notes</mat-icon>
+                <input type="text" [(ngModel)]="item.comentario" placeholder="Notas de cocina...">
+            </div>
+        </div>
+    </mat-dialog-content>
+
+    <div class="footer-sticky">
+        <div class="cliente-box">
+            <mat-icon>person_outline</mat-icon>
+            <input type="text" [(ngModel)]="nombreCliente" class="input-cliente" [placeholder]="
+    isDelivery
+      ? 'Nombre del cliente (obligatorio)'
+      : 'Nombre del cliente'
+  " />
+
+  
+        </div>
+
+        <button class="confirm-full-btn" (click)="confirmar()" [disabled]="
+    seleccionados.length === 0 ||
+    (isDelivery && !nombreCliente) || isFetching
+  ">
+            <span class="btn-text">
+                <mat-icon>send</mat-icon> ENVIAR A COCINA
+            </span>
+            <span class="btn-price">
+                {{ totalPedido | currency:'S/.' }}
+            </span>
+        </button>
+    </div>
+</div>

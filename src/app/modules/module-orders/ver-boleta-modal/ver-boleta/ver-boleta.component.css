@@ -1,0 +1,144 @@
+/* --- boleta.component.css --- */
+
+.boleta-container {
+    width: 100%;
+    max-width: 500px;
+    font-family: 'Roboto', sans-serif;
+    background: white;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+/* --- Header --- */
+.boleta-header {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.boleta-header h2 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.text-center {
+    text-align: center;
+    margin: 5px 0;
+}
+
+/* --- Información de transacción --- */
+.transaction-info { margin: 15px 0; }
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    font-size: 0.9em;
+}
+
+/* --- Contenedor de productos con scroll --- */
+.productos-container.scrollable-content {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    padding: 0 5px;
+    margin-bottom: 15px;
+}
+
+.productos-container.scrollable-content::-webkit-scrollbar { width: 8px; }
+.productos-container.scrollable-content::-webkit-scrollbar-thumb {
+    background-color: #b0b0b0;
+    border-radius: 4px;
+}
+.productos-container.scrollable-content::-webkit-scrollbar-track { background: #f1f1f1; }
+
+.productos-container { margin: 15px 0; }
+
+.productos-header {
+    display: flex;
+    font-weight: bold;
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.producto-item { margin-bottom: 12px; }
+.producto-main { display: flex; padding: 5px 0; }
+
+/* --- Columnas de productos --- */
+.desc-col { flex: 3; text-align: left; }
+.cant-col { flex: 1; text-align: center; }
+.price-col, .total-col { flex: 1.5; text-align: right; }
+
+/* --- Adicionales y comentarios --- */
+.adicionales-container { margin-left: 20px; }
+
+.adicional-item {
+    display: flex;
+    color: #666;
+    font-size: 0.9em;
+    padding: 3px 0;
+}
+
+.comentario-item {
+    font-style: italic;
+    color: #888;
+    font-size: 0.85em;
+    padding: 3px 0 3px 20px;
+}
+
+/* --- Totales --- */
+.totales-container { margin-top: 20px; }
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+.final-total {
+    font-size: 1.1em;
+    font-weight: bold;
+    border-top: 1px solid #ddd;
+    margin-top: 8px;
+    padding-top: 12px;
+}
+
+.payment-method {
+    text-align: right;
+    margin-top: 10px;
+    font-size: 0.95em;
+}
+
+/* --- Footer --- */
+.footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* --- Acciones --- */
+.actions-container {
+    margin-top: 20px;
+    padding: 0;
+}
+
+.close-btn, .print-btn { margin-left: 10px; }
+
+/* --- Media Print --- */
+@media print {
+    .boleta-container {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        box-shadow: none;
+    }
+    
+    .actions-container { display: none !important; }
+    
+    @page {
+        size: auto;
+        margin: 5mm;
+    }
+}

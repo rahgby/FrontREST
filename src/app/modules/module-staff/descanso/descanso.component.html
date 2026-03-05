@@ -1,0 +1,11 @@
+<div id="casilla-superior" #casillaSuperior class="casilla">
+    <mat-icon (click)="retroceder()" class="icono-retroceder">arrow_back</mat-icon>
+</div>
+<div id="casilla-inferior" class="casilla">
+    <div class="tabla">
+        <div class="dia-container" *ngFor="let dia of dias">
+            <div class="dia-header">{{ dia.nombre }}</div>
+            <div class="dia-columna" [attr.data-dia]="dia.nombre"></div>
+        </div>
+    </div>
+</div>

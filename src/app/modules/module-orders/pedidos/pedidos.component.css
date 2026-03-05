@@ -1,0 +1,398 @@
+/* --- Contenedor principal --- */
+.contenedor-principal {
+    padding: 20px;
+    background-color: hsl(210, 17%, 98%);
+}
+
+@media (max-width: 768px) {
+    .contenedor-principal { padding: 6px; }
+    .titulo-pedido { display: none; }
+}
+.btn-agregar-pedido {
+  width: 2%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 4px;
+  font-weight: 10;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.btn-agregar-pedido mat-icon {
+  font-size: 20px;
+}
+
+
+.btn-agregar-pedido:not([disabled]):focus {
+  animation: pulse 1.5s infinite;
+}
+h2 {
+    margin: 0 0 16px;
+    color: #1a252f;
+    font-size: 1.75rem;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+/* --- Breadcrumb --- */
+.custom-breadcrumb {
+    background: white;
+    padding: 16px;
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.custom-breadcrumb .breadcrumb-item+.breadcrumb-item::before {
+    content: "›";
+    color: #9aa0a6;
+    font-weight: 500;
+}
+
+.custom-breadcrumb a {
+    text-decoration: none;
+    color: #3f51b5;
+    display: inline-flex;
+    align-items: center;
+}
+
+.custom-breadcrumb a:hover { text-decoration: underline; }
+
+.breadcrumb-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    line-height: 18px;
+}
+
+.custom-breadcrumb .active {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* --- Botones y acciones --- */
+.action-button.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(220, 105, 11, 0.2);
+    height: 46px;
+    margin-bottom: 10px;
+}
+
+.btn-icon-small {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    line-height: 32px !important;
+    padding: 4px !important;
+}
+
+.btn-icon-small .mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    line-height: 18px !important;
+}
+
+.acciones { flex-shrink: 0; }
+
+/* --- Tabs personalizadas --- */
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+    background: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #495057;
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.nav-tabs .nav-link.active {
+    color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.05);
+    border-bottom: 3px solid #0d6efd;
+}
+
+/* --- Tab con indicador --- */
+.tab-label-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.badge-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #ff1744;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 0 2px white;
+    animation: pulse-red 1.5s infinite;
+}
+
+@keyframes pulse-red {
+    0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255, 23, 68, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 23, 68, 0); }
+    100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255, 23, 68, 0); }
+}
+
+::ng-deep .mat-tab-label {
+    padding: 0 15px !important;
+    opacity: 1 !important;
+}
+
+/* --- Card de pedido --- */
+.pedido-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.pedido-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.pedido-card,
+.pedido-card .card-title,
+.pedido-card .card-subtitle,
+.pedido-card .card-body p,
+.pedido-card .estado-badge {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.highlight-card {
+    border: 1px solid #ff4081 !important;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(255, 64, 129, 0.2) !important;
+}
+
+/* --- Barra de estado lateral --- */
+.barra-estado {
+    width: 6px;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.barra-verde { background-color: #28a745; }
+.barra-azul { background-color: #17a2b8; }
+.barra-amarillo { background-color: #ffc107; }
+.barra-rojo { background-color: #dc3545; }
+.barra-gris { background-color: #6c757d; }
+.barra-default { background-color: #adb5bd; }
+
+/* --- Badges para estados --- */
+.estado-badge {
+    padding: 0.35em 0.65em;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 5px 10px !important;
+}
+
+.badge-verde { background-color: #d4edda; color: #155724; }
+.badge-azul { background-color: #d1ecf1; color: #0c5460; }
+.badge-amarillo { background-color: #fff3cd; color: #856404; }
+.badge-rojo { background-color: #f8d7da; color: #721c24; }
+.badge-gris { background-color: #e2e3e5; color: #383d41; }
+.badge-default { background-color: #f8f9fa; color: #212529; }
+
+/* --- Tipografía de la card --- */
+.card-title {
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    color: #333;
+}
+
+.card-subtitle {
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    color: #666;
+}
+
+.card-body p,
+.card-body p strong,
+.card-body .small,
+.card-body .small strong {
+    font-size: 14px !important;
+}
+
+.card-body p {
+    font-weight: 400 !important;
+    color: #555;
+}
+
+.card-body p strong {
+    font-weight: 500 !important;
+    color: #444;
+}
+
+.card-body .h6 {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #2c3e50;
+}
+
+.card-body .small {
+    font-weight: 400 !important;
+    color: #777;
+}
+
+.card-body .small strong {
+    font-weight: 500 !important;
+    color: #666;
+}
+
+/* --- Spinner overlay --- */
+.spinner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* --- Fila de búsqueda y ordenamiento --- */
+.fila-buscar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding-right: 10px;
+}
+
+.campo-buscar { flex: 0 0 88%; }
+.btn-buscar { flex: 0 0 12%; white-space: nowrap; }
+
+.fila-ordenar {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+}
+
+/* --- Formularios y botones de grupo --- */
+mat-form-field { width: 100%; }
+mat-form-field .mat-form-field-wrapper { padding-bottom: 0; }
+mat-form-field .mat-form-field-outline { background-color: white; }
+
+.btn-group .btn {
+    border-radius: 6px !important;
+    padding: 8px 16px;
+}
+
+.btn-group .btn.active {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+}
+
+/* --- Paginador --- */
+mat-paginator {
+    background: transparent !important;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+/* --- Indicador NUEVO --- */
+.nuevo-indicador {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background: #ff4081;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(255, 64, 129, 0.4);
+}
+
+.punto-brillante {
+    width: 6px;
+    height: 6px;
+    background-color: white;
+    border-radius: 50%;
+    animation: parpadeo 1s infinite;
+}
+
+@keyframes parpadeo {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+/* --- Título --- */
+.titulo {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 1.75rem;
+}
+
+/* --- Media Queries (agrupadas) --- */
+@media (max-width: 768px) {
+    .contenedor-principal { padding: 2px; }
+    
+    .nav-tabs .nav-link {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .card-body { padding: 1rem !important; }
+    
+    .btn-group .btn {
+        padding: 6px 12px;
+        font-size: 0.875rem;
+    }
+    
+    .titulo { font-size: 1.5rem; }
+    
+    .d-flex.justify-content-between.align-items-center {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+    
+    .d-flex.justify-content-between.align-items-center .d-flex {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .fila-buscar {
+        gap: 8px;
+        padding-right: 0px;
+    }
+    
+    .campo-buscar { flex: 0 0 80%; }
+    .btn-buscar { flex: 0 0 20%; padding: 0 8px; }
+    .texto-boton { display: none; }
+    
+    .fila-ordenar {
+        margin-top: 10px;
+    }
+    
+    .fila-ordenar .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

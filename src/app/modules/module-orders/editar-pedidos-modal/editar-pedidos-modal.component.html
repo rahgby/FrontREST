@@ -1,0 +1,111 @@
+<h2 mat-dialog-title class="dialog-title">Editar Orden</h2>
+
+<mat-dialog-content class="dialog-content">
+  <!-- Información general -->
+  <div class="order-info">
+    <div class="info-field">
+      <strong>Cliente:</strong>
+      <input matInput [(ngModel)]="copiaData.nombreCliente" class="clean-input">
+    </div>
+    <div class="info-field">
+      <strong>Mesero:</strong> {{ data.usuario }}
+    </div>
+        <div class="info-field">
+      <strong>Mesa:</strong>
+      <mat-form-field appearance="outline" class="mesa-selector">
+  <mat-select [(ngModel)]="copiaData.idMesa" placeholder="Seleccionar mesa">
+    <mat-option [value]="null">Sin mesa (Delivery)</mat-option>
+    <mat-option 
+      *ngFor="let mesa of mesasDisponibles" 
+      [value]="mesa.idMesa"
+      [disabled]="!mesa.habilitado && !mesa.esDelUsuario"
+      [ngClass]="{'mesa-ocupada-otro': !mesa.habilitado && !mesa.esDelUsuario}"
+    >
+      <div class="mesa-option-content">
+        <span class="mesa-nombre">{{ mesa.nombre }}</span>
+        <span class="mesa-estado" [ngClass]="{
+          'estado-disponible': mesa.habilitado,
+          'estado-ocupada-propia': !mesa.habilitado && mesa.esDelUsuario,
+          'estado-ocupada-otro': !mesa.habilitado && !mesa.esDelUsuario
+        }">
+          <mat-icon *ngIf="!mesa.habilitado && !mesa.esDelUsuario" class="warning-icon">warning</mat-icon>
+          <mat-icon *ngIf="mesa.habilitado">check_circle</mat-icon>
+          <mat-icon *ngIf="!mesa.habilitado && mesa.esDelUsuario">person</mat-icon>
+          {{ mesa.habilitado ? 'Disponible' : (mesa.esDelUsuario ? 'Tu mesa' : 'Ocupada') }}
+        </span>
+        <span *ngIf="mesa.isMesaUnion" class="union-badge">
+          <mat-icon>group</mat-icon> Unión
+        </span>
+      </div>
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+    </div>
+    <div class="info-field">
+      <strong>Fecha/Hora:</strong> {{ copiaData.fechaRegistro | date:'short' }}
+    </div>
+    <div class="info-field">
+      <strong>Orden:</strong> #{{ copiaData.idPedido }}
+    </div>
+  </div>
+
+
+  <mat-divider class="divider"></mat-divider>
+
+  <!-- Platillos -->
+  <div class="platillos-container" *ngFor="let detalle of copiaData.detallePedido; let i = index">
+    <div class="platillo">
+      <div class="platillo-header">
+        <h3 class="platillo-title">
+          {{ detalle.plato }}
+          <span class="precio">{{ detalle.precio | currency:'S/ ' }}</span>
+          <button mat-icon-button color="warn" (click)="eliminarDetalle(i)" class="icon-button">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </h3>
+      </div>
+
+      <div class="field-group">
+        <strong>Cantidad:</strong>
+        <input type="number" min="1" [(ngModel)]="detalle.cantidad" class="clean-input small-input">
+      </div>
+
+      <!-- Extras -->
+      <div class="extras-group" *ngIf="detalle.detallePedidoAdicional?.length">
+        <strong>Extras:</strong>
+        <div class="extra-item" *ngFor="let extra of detalle.detallePedidoAdicional; let j = index">
+          {{ extra.adicional }} ({{ extra.precio | currency:'S/ ' }})
+          <input type="number" min="1" [(ngModel)]="extra.cantidad" class="clean-input extra-input">
+          <button mat-icon-button color="warn" (click)="eliminarAdicional(i, j)" class="icon-button small-icon">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Comentario -->
+      <div class="field-group">
+        <strong>Comentario:</strong>
+        <textarea [(ngModel)]="detalle.comentario" class="clean-textarea"></textarea>
+      </div>
+
+      <div class="subtotal">
+        <strong>Subtotal:</strong> {{ detalle.subtotal | currency:'S/ ' }}
+      </div>
+    </div>
+
+    <mat-divider class="divider"></mat-divider>
+  </div>
+
+  <!-- Totales -->
+  <div class="totales">
+    <p class="total"><strong>Total:</strong> {{ copiaData.monto | currency:'S/ ' }}</p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-stroked-button (click)="cerrar()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="guardar()">
+    <mat-icon>{{ 'save' }}</mat-icon>
+    {{'Guardar Cambios' }}
+  </button>
+</mat-dialog-actions>

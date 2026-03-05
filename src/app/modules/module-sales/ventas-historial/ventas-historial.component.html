@@ -1,0 +1,546 @@
+<div class="contenedor-principal">
+    <h2 class="titulo-pedido">Historial de Ventas</h2>
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb custom-breadcrumb">
+            <li class="breadcrumb-item">
+                <a routerLink="/pedidos" class="d-flex align-items-center gap-1">
+                    <mat-icon class="breadcrumb-icon">home</mat-icon>
+                    <span>Inicio</span>
+                </a>
+            </li>
+            <li class="breadcrumb-item active">Ventas</li>
+        </ol>
+    </nav>
+
+   
+
+        <div class="filters-bar">
+            <mat-form-field appearance="outline" class="search-field">
+                <mat-label>Buscar ticket</mat-label>
+                <input matInput [(ngModel)]="searchTerm" placeholder="Ej: 17 o Yape">
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="date-field">
+                <mat-label>Fecha Inicio</mat-label>
+                <input matInput [matDatepicker]="pickerInicio" [(ngModel)]="fechaInicio">
+                <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+                <mat-datepicker #pickerInicio></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="date-field">
+                <mat-label>Fecha Fin</mat-label>
+                <input matInput [matDatepicker]="pickerFin" [(ngModel)]="fechaFin">
+                <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+                <mat-datepicker #pickerFin></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="time-field">
+                <mat-label>Desde</mat-label>
+                <input matInput type="time" [(ngModel)]="horaInicio">
+                <mat-icon matSuffix class="small-icon">schedule</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="time-field">
+                <mat-label>Hasta</mat-label>
+                <input matInput type="time" [(ngModel)]="horaFin">
+                <mat-icon matSuffix class="small-icon">schedule</mat-icon>
+            </mat-form-field>
+
+            <div class="actions-group">
+                <button mat-raised-button class="btn-buscar" (click)="aplicarFiltros()">
+                    <mat-icon>search</mat-icon>
+                    <span></span>
+                </button>
+
+                <button mat-icon-button color="warn"
+                    *ngIf="searchTerm || horaInicio || horaFin || fechaInicio || fechaFin"
+                    matTooltip="Limpiar filtros" (click)="limpiarFiltros()">
+                    <mat-icon>filter_alt_off</mat-icon>
+                </button>
+            </div>
+
+            
+        </div>
+
+        <!-- Tabla de Cajas -->
+<div class="historial-container mb-4">
+  <div *ngIf="isLoadingCajas" class="spinner-container">
+    <mat-progress-spinner mode="indeterminate" diameter="60" color="primary"></mat-progress-spinner>
+    <p>Cargando cajas...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoadingCajas">
+    <div class="sales-card">
+      <div class="sales-card-header">
+        <div class="header-content">
+          <mat-icon class="header-icon">point_of_sale</mat-icon>
+          <span class="header-title">Historial de Cajas</span>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="cajas">
+
+          <ng-container matColumnDef="idCaja">
+            <th mat-header-cell *matHeaderCellDef> # Caja </th>
+            <td mat-cell *matCellDef="let c">
+              <span class="ticket-badge">#{{ c.idCaja }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fechaInicio">
+            <th mat-header-cell *matHeaderCellDef> Apertura </th>
+            <td mat-cell *matCellDef="let c" class="text-muted">
+              <div class="d-flex flex-column">
+                <span>{{ c.fechaInicio | date:'dd/MM/yyyy' }}</span>
+                <small class="time-text">{{ c.fechaInicio | date:'hh:mm a' }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fechaCierre">
+            <th mat-header-cell *matHeaderCellDef> Cierre </th>
+            <td mat-cell *matCellDef="let c" class="text-muted">
+              <div class="d-flex flex-column" *ngIf="c.fechaCierre; else abierta">
+                <span>{{ c.fechaCierre | date:'dd/MM/yyyy' }}</span>
+                <small class="time-text">{{ c.fechaCierre | date:'hh:mm a' }}</small>
+              </div>
+              <ng-template #abierta>
+                <span class="badge bg-success">Abierta</span>
+              </ng-template>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="montoInicial">
+            <th mat-header-cell *matHeaderCellDef> Monto Inicial </th>
+            <td mat-cell *matCellDef="let c">
+              {{ c.montoInicial | currency:'S/ ' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="ventaNeta">
+            <th mat-header-cell *matHeaderCellDef> Venta Neta </th>
+            <td mat-cell *matCellDef="let c" class="total-cell">
+              {{ c.ventaNeta | currency:'S/ ' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="monto">
+            <th mat-header-cell *matHeaderCellDef> Monto Final </th>
+            <td mat-cell *matCellDef="let c" class="total-cell">
+              {{ c.monto | currency:'S/ ' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef> Estado </th>
+            <td mat-cell *matCellDef="let c">
+              <span class="badge" [ngClass]="c.estado ? 'bg-success' : 'bg-secondary'">
+                {{ c.estado ? 'Activa' : 'Cerrada' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['idCaja','fechaInicio','fechaCierre','montoInicial','ventaNeta','monto','estado']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['idCaja','fechaInicio','fechaCierre','montoInicial','ventaNeta','monto','estado'];"
+              class="hover-row"></tr>
+        </table>
+
+        <div *ngIf="cajas.length === 0" class="no-data-card">
+          <div class="empty-icon-bg"><mat-icon>search_off</mat-icon></div>
+          <p>No se encontraron cajas.</p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <mat-paginator 
+    [length]="totalRegistrosCajas" 
+    [pageSize]="pageSizeCajas" 
+    [pageSizeOptions]="[3, 5, 10]"
+    (page)="onPageChangeCajas($event)">
+  </mat-paginator>
+</div>
+
+        <div class="historial-container">
+            <div *ngIf="isLoading" class="spinner-container">
+                <mat-progress-spinner mode="indeterminate" diameter="60" color="primary"></mat-progress-spinner>
+                <p>Cargando historial...</p>
+            </div>
+
+        <ng-container *ngIf="!isLoading">
+            <div class="sales-card">
+                <div class="sales-card-header">
+                    <div class="header-content">
+                        <mat-icon class="header-icon">history</mat-icon>
+                        <span class="header-title">Histórico de Ventas</span>
+                    </div>
+                </div>
+
+                
+
+                <div class="table-container">
+                    <table mat-table [dataSource]="ventas">
+                        <ng-container matColumnDef="ticket">
+                            <th mat-header-cell *matHeaderCellDef> Ticket </th>
+                            <td mat-cell *matCellDef="let v">
+                                <span class="ticket-badge">#{{ v.correlativo }}</span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="hora">
+                            <th mat-header-cell *matHeaderCellDef> Fecha y Hora </th>
+                            <td mat-cell *matCellDef="let v" class="text-muted">
+                                <div class="d-flex flex-column">
+                                    <span>{{ v.fechaAbonado | date:'dd/MM/yyyy' }}</span>
+                                    <small class="time-text">{{ v.fechaAbonado | date:'hh:mm a' }}</small>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="tipo">
+                            <th mat-header-cell *matHeaderCellDef> Tipo </th>
+                            <td mat-cell *matCellDef="let v">
+                                <span >
+                                    {{ v.isDelivery ? 'Delivery' : 'Mesa' }}
+                                </span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="desglose">
+                            <th mat-header-cell *matHeaderCellDef> Detalle de Cobro </th>
+                            <td mat-cell *matCellDef="let v">
+                                <div class="pago-tags">
+                                    <span *ngFor="let pago of v.detalleVentaPago"
+                                        [class]="'tag-pago ' + pago.metodoPago.toLowerCase()">
+                                        <mat-icon class="tiny-icon"
+                                            *ngIf="pago.metodoPago === 'EFECTIVO'">payments</mat-icon>
+                                        <mat-icon class="tiny-icon"
+                                            *ngIf="pago.metodoPago === 'TARJETA'">credit_card</mat-icon>
+                                        <mat-icon class="tiny-icon"
+                                            *ngIf="pago.metodoPago.includes('YAPE')">qr_code_2</mat-icon>
+                                        <mat-icon class="tiny-icon" *ngIf="pago.metodoPago == 'PLIN'">phonelink_ring</mat-icon>
+                                        {{ pago.metodoPago }}: {{ pago.monto | currency:'S/ ' }}
+                                        
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="total">
+                            <th mat-header-cell *matHeaderCellDef> Total </th>
+                            <td mat-cell *matCellDef="let v" class="total-cell">
+                                {{ v.total | currency:'S/ ' }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="acciones">
+                            <th mat-header-cell *matHeaderCellDef class="text-center"> Acciones </th>
+                            <td mat-cell *matCellDef="let v">
+                                <div class="actions-wrapper">
+                                    <button mat-icon-button class="btn-action-view" (click)="verPedidos(v)"
+                                        matTooltip="Ver Detalles">
+                                        <mat-icon>visibility</mat-icon>
+                                    </button>
+                                    <button mat-icon-button class="btn-action-print" (click)="crearComprobante(v)"
+                                        matTooltip="Imprimir">
+                                        <mat-icon>receipt_long</mat-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="['ticket', 'hora', 'tipo',  'desglose', 'total', 'acciones']"></tr>
+                        <tr mat-row *matRowDef="let row; columns: ['ticket', 'hora', 'tipo', 'desglose', 'total', 'acciones'];"
+                            class="hover-row"></tr>
+                    </table>
+
+                    <div *ngIf="ventas.length === 0" class="no-data-card">
+                        <div class="empty-icon-bg"><mat-icon>search_off</mat-icon></div>
+                        <p>No se encontraron resultados.</p>
+                    </div>
+                </div>
+
+                
+            </div>
+        </ng-container>
+        <mat-paginator [length]="totalRegistros" [pageSize]="pageSize" [pageSizeOptions]="[10, 20, 50]"
+                    (page)="onPageChange($event)"></mat-paginator>
+    </div>
+
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="titulo-pedido">Reporte de Ventas por Categoría</h2>
+        <button mat-raised-button color="primary" (click)="cargarReporteVentasPorCategoria()" 
+        [disabled]="loadingReporte">
+  <mat-icon [class.fa-spin]="loadingReporte">sync</mat-icon>
+  <span class="ms-1">
+    {{ (fechaInicio || fechaFin) ? 'Reporte por fechas' : 'Reporte caja actual' }}
+  </span>
+</button>
+      </div>
+    
+      <!-- Info de caja -->
+      <div *ngIf="cajaInfoReporte" class="alert alert-info d-flex align-items-center mb-3">
+        <mat-icon class="me-2">point_of_sale</mat-icon>
+        <div>
+          <strong>Caja #{{ cajaInfoReporte.id }}</strong> - 
+          Abierta: {{ cajaInfoReporte.fechaApertura | date:'dd/MM/yyyy HH:mm' }} - 
+          Monto Inicial: {{ formatearMoneda(cajaInfoReporte.montoInicial) }}
+          <span *ngIf="fechaGeneracionReporte" class="ms-3 text-muted small">
+            <mat-icon class="tiny-icon">schedule</mat-icon>
+            Generado: {{ fechaGeneracionReporte | date:'dd/MM/yyyy HH:mm:ss' }}
+          </span>
+        </div>
+      </div>
+    
+      <!-- Loading del reporte -->
+      <div *ngIf="loadingReporte" class="d-flex flex-column align-items-center py-4">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p class="mt-3 text-muted">Cargando reporte de ventas...</p>
+      </div>
+    
+      <!-- Error del reporte -->
+      <div *ngIf="!loadingReporte && errorReporte" class="alert alert-warning">
+        <mat-icon class="me-2">warning</mat-icon>
+        {{ errorReporte }}
+      </div>
+    
+      <!-- Tarjetas de Resumen -->
+      <div *ngIf="!loadingReporte && reporteVentasCategoria?.length > 0" class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+          <div class="card border-left-primary shadow-sm h-100">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    Total Ventas
+                  </div>
+                  <div class="h5 mb-0 font-weight-bold">
+                    {{ formatearMoneda(resumenCategoria?.totalGeneralVendido || 0) }}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <mat-icon class="fa-2x text-gray-300">payments</mat-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-xl-3 col-md-6 mb-3">
+          <div class="card border-left-success shadow-sm h-100">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                    Items Vendidos
+                  </div>
+                  <div class="h5 mb-0 font-weight-bold">
+                    {{ resumenCategoria?.totalItemsVendidos || 0 }}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <mat-icon class="fa-2x text-gray-300">shopping_cart</mat-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-xl-3 col-md-6 mb-3">
+          <div class="card border-left-info shadow-sm h-100">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                    Categorías
+                  </div>
+                  <div class="h5 mb-0 font-weight-bold">
+                    {{ resumenCategoria?.totalCategorias || 0 }}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <mat-icon class="fa-2x text-gray-300">category</mat-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-xl-3 col-md-6 mb-3">
+          <div class="card border-left-warning shadow-sm h-100">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                    Promedio por Categoría
+                  </div>
+                  <div class="h5 mb-0 font-weight-bold">
+                    {{ formatearMoneda(resumenCategoria?.promedioPorCategoria || 0) }}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <mat-icon class="fa-2x text-gray-300">analytics</mat-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Tabla de Ventas por Categoría -->
+      <div *ngIf="!loadingReporte && reporteVentasCategoria?.length > 0" class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+          <h6 class="m-0 font-weight-bold text-primary">
+            <mat-icon class="me-2">pie_chart</mat-icon>
+            Detalle por Categoría
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Categoría</th>
+                  <th class="text-center">Items Vendidos</th>
+                  <th class="text-end">Total Vendido</th>
+                  <th class="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let categoria of reporteVentasCategoria">
+                  <td>
+                    <strong>{{ categoria.categoria }}</strong>
+                    <span class="badge bg-secondary ms-2" *ngIf="categoria.items?.length">
+                      {{ categoria.items.length }} items
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge bg-primary rounded-pill px-3 py-2">
+                      {{ categoria.totalItems || 0 }}
+                    </span>
+                  </td>
+                  <td class="text-end fw-bold">
+                    {{ formatearMoneda(categoria.totalVendido || 0) }}
+                  </td>
+                  
+                  <td class="text-center">
+                    <button mat-button color="accent" (click)="verDetalleCategoria(categoria)">
+                      <mat-icon class="me-1">visibility</mat-icon>
+                      Ver detalles
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot class="table-light fw-bold">
+                <tr>
+                  <td>TOTAL</td>
+                  <td class="text-center">{{ resumenCategoria?.totalItemsVendidos || 0 }}</td>
+                  <td class="text-end">{{ formatearMoneda(resumenCategoria?.totalGeneralVendido || 0) }}</td>
+                  <td class="text-center">100%</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal de Detalle de Categoría -->
+    <div class="modal fade" [class.show]="mostrarModalCategoria" [style.display]="mostrarModalCategoria ? 'block' : 'none'" 
+         style="background-color: rgba(0,0,0,0.5);" tabindex="-1">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h5 class="modal-title">
+              <mat-icon class="me-2">list_alt</mat-icon>
+              Detalle: {{ categoriaSeleccionada?.categoria }}
+            </h5>
+            <button type="button" class="btn-close btn-close-white" (click)="cerrarModalCategoria()"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Resumen de la categoría -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="card bg-light">
+                  <div class="card-body">
+                    <h6 class="card-title text-muted">Total Vendido</h6>
+                    <h3 class="card-text fw-bold text-primary">
+                      {{ formatearMoneda(categoriaSeleccionada?.totalVendido || 0) }}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card bg-light">
+                  <div class="card-body">
+                    <h6 class="card-title text-muted">Items Vendidos</h6>
+                    <h3 class="card-text fw-bold text-success">
+                      {{ categoriaSeleccionada?.totalItems || 0 }}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+    
+            <!-- Tabla de items -->
+            <h6 class="fw-bold mb-3">Items vendidos en esta categoría:</h6>
+            <div class="table-responsive">
+              <table class="table table-sm table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Item</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-end">Precio Unit.</th>
+                    <th class="text-end">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of itemsCategoriaSeleccionada">
+                    <td>
+                      <span class="badge" [ngClass]="item.tipoItem === 'PLATO' ? 'badge-primary' : 'badge-info'">
+                        {{ item.tipoItem === 'PLATO' ? '🍽️' : '➕' }} {{ item.tipoItem }}
+                      </span>
+                    </td>
+                    <td>
+                      {{ item.nombreItem }}
+                      <small class="text-muted d-block">ID: {{ item.idItem }}</small>
+                    </td>
+                    <td class="text-center">
+                      <span class="badge bg-secondary rounded-pill px-3">
+                        {{ item.cantidad }}
+                      </span>
+                    </td>
+                    <td class="text-end">
+                      {{ formatearMoneda(item.montoUnitario || 0) }}
+                    </td>
+                    <td class="text-end fw-bold">
+                      {{ formatearMoneda(item.montoTotal || 0) }}
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot class="table-light fw-bold">
+                  <tr>
+                    <td colspan="4" class="text-end">TOTAL CATEGORÍA:</td>
+                    <td class="text-end text-primary">
+                      {{ formatearMoneda(categoriaSeleccionada?.totalVendido || 0) }}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModalCategoria()">
+              <mat-icon class="me-2">close</mat-icon>
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+</div>

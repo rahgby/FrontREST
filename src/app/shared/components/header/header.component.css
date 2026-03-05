@@ -1,0 +1,24 @@
+.mainheader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  
+}
+
+h1 {
+  padding-top: 1rem;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 120px; 
+  height: auto; 
+}
+
+

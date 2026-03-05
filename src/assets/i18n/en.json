@@ -1,0 +1,18 @@
+{
+  "menu": {
+    "home": "Home",
+    "api": "API Sample",
+    "page1": "Page 1",
+    "pagina1": "Page a1",
+    "pagina2": "Page a2"
+  },
+  "pages": {
+    "auth": {
+      "login": "Enter with oAuth2",
+      "logout": "Logout from oAuth2"
+    },
+    "api": {
+      "search": "Search"
+    }
+  }
+}

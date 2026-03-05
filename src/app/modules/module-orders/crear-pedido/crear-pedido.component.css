@@ -1,0 +1,12 @@
+.contenedor-principal {
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+  }
+
+  /* Mobile mode ON 🧠 */
+@media (max-width: 768px) {
+  .contenedor-principal {
+    padding: 6px;
+  }
+}

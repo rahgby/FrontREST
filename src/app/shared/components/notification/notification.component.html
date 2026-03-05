@@ -1,0 +1,31 @@
+<div class="notification-wrapper">
+  <div class="notification-bell" (click)="toggleNotifications()">
+    <mat-icon>notifications</mat-icon>
+    <span *ngIf="unreadCount > 0" class="badge">{{ unreadCount }}</span>
+  </div>
+
+  <div *ngIf="showNotifications" class="notification-dropdown">
+    <div class="notification-header">
+      <h3>Notificaciones</h3>
+      <small>{{ unreadCount }} no leídas</small>
+    </div>
+
+    <div *ngFor="let notif of notifications" 
+         class="notification-item" 
+         [class.unread]="!notif.read">
+      <mat-icon class="notification-icon">{{ notif.icon }}</mat-icon>
+      <div class="notification-content">
+        <strong>{{ notif.title }}</strong>
+        <p>{{ notif.message }}</p>
+        <small>{{ notif.time }}</small>
+      </div>
+      <button mat-icon-button (click)="markAsRead(notif)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div *ngIf="notifications.length === 0" class="empty">
+      No hay notificaciones
+    </div>
+  </div>
+</div>

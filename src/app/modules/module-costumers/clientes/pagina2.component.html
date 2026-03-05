@@ -1,0 +1,348 @@
+
+<div class="contenedor-principal">  <!-- Modal para agregar cliente -->
+
+  <div class="spinner-overlay" *ngIf="(spinnerService.isLoading$ | async)">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <h2>Lista de Clientes</h2>
+
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb custom-breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/pedidos" class="d-flex align-items-center gap-1">
+          <mat-icon class="breadcrumb-icon">home</mat-icon>
+          <span>Inicio</span>
+        </a>
+      </li>
+
+
+
+      <li class="breadcrumb-item">
+        Clientes
+      </li>
+
+
+    </ol>
+  </nav>
+
+  <ng-template #modalContent>
+    
+    <mat-dialog-content>
+      <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()" class="form-container">
+        <div class="form-columns">
+          <div class="form-column">
+            <mat-form-field appearance="fill">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="nombre" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Apellido</mat-label>
+              <input matInput formControlName="apellido" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Tipo de Documento</mat-label>
+              <mat-select formControlName="tipoDoc" required>
+                <mat-option *ngFor="let tipo of tiposDocumento" [value]="tipo">{{ tipo }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Documento</mat-label>
+              <input matInput formControlName="documento" required>
+            </mat-form-field>
+          </div>
+
+          <div class="form-column">
+            <mat-form-field appearance="fill">
+              <mat-label>Correo</mat-label>
+              <input matInput formControlName="correo" type="email" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Contraseña</mat-label>
+              <input matInput formControlName="password" type="password" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Teléfono</mat-label>
+              <input matInput formControlName="telefono" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Dirección</mat-label>
+              <input matInput formControlName="direccion">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Fecha de Nacimiento</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-dialog-actions align="end">
+          <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+          <button mat-raised-button type="submit" class="submit-button">Agregar</button>
+        </mat-dialog-actions>
+      </form>
+    </mat-dialog-content>
+  </ng-template>
+
+  <!-- Modal para editar cliente -->
+  <ng-template #editarModal>
+    <h2 mat-dialog-title>Editar Cliente</h2>
+    <mat-dialog-content>
+      <form [formGroup]="editarForm" (ngSubmit)="guardarClientes()">
+        <!-- Campo para la Contraseña -->
+        <mat-form-field appearance="fill">
+          <mat-label>Contraseña</mat-label>
+          <input matInput formControlName="password" type="password">
+        </mat-form-field>
+  
+        <!-- Campo para el Nombre -->
+        <mat-form-field appearance="fill">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre">
+        </mat-form-field>
+  
+        <!-- Campo para el Apellido -->
+        <mat-form-field appearance="fill">
+          <mat-label>Apellido</mat-label>
+          <input matInput formControlName="apellido">
+        </mat-form-field>
+  
+        <!-- Campo para el Tipo de Documento -->
+        <mat-form-field appearance="fill">
+          <mat-label>Tipo de Documento</mat-label>
+          <mat-select formControlName="tipoDoc">
+            <mat-option *ngFor="let tipo of tiposDocumento" [value]="tipo">{{ tipo }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+  
+        <!-- Campo para el Documento -->
+        <mat-form-field appearance="fill">
+          <mat-label>Documento</mat-label>
+          <input matInput formControlName="documento">
+        </mat-form-field>
+  
+        <!-- Campo para el Correo -->
+        <mat-form-field appearance="fill">
+          <mat-label>Correo</mat-label>
+          <input matInput formControlName="correo">
+        </mat-form-field>
+  
+        <!-- Campo para el Teléfono -->
+        <mat-form-field appearance="fill">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="telefono">
+        </mat-form-field>
+  
+        <mat-form-field appearance="fill">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="direccion">
+        </mat-form-field>
+  
+        <!-- Campo para la Fecha de Nacimiento -->
+        <mat-form-field appearance="fill">
+          <mat-label>Fecha de Nacimiento</mat-label>
+          <input matInput [matDatepicker]="pickerEdit" formControlName="fechaNacimiento">
+          <mat-datepicker-toggle matSuffix [for]="pickerEdit"></mat-datepicker-toggle>
+          <mat-datepicker #pickerEdit></mat-datepicker>
+        </mat-form-field>
+  
+        <!-- Botones del modal -->
+        <mat-dialog-actions align="end">
+          <button mat-button mat-dialog-close>Cancelar</button>
+          <button mat-raised-button color="primary" type="submit">Guardar</button>
+        </mat-dialog-actions>
+      </form>
+    </mat-dialog-content>
+  </ng-template>
+
+  <!-- Modal para detalles del cliente -->
+  <ng-template #detallesModal>
+    <h2 mat-dialog-title>Detalles del Cliente</h2>
+    <mat-dialog-content class="details-container">
+      <div class="detail-item">
+        <span class="detail-label">Nombre:</span>
+        <span class="detail-value">{{ clienteDetalles?.nombre }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Apellido:</span>
+        <span class="detail-value">{{ clienteDetalles?.apellido }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Correo:</span>
+        <span class="detail-value">{{ clienteDetalles?.correo }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Teléfono:</span>
+        <span class="detail-value">{{ clienteDetalles?.telefono }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Fecha Nacimiento:</span>
+        <span class="detail-value">{{ clienteDetalles?.fechaNacimiento | date:'dd/MM/yyyy' }}</span>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close class="close-button">Cerrar</button>
+    </mat-dialog-actions>
+  </ng-template>
+
+  <!-- Modal para recuperar cliente -->
+  <ng-template #recuperarModal>
+    <h2 mat-dialog-title>Recuperar Cliente</h2>
+    <mat-dialog-content>
+      <div class="inactive-clients-container">
+        <table mat-table [dataSource]="clientesInactivos" class="inactive-clients-table">
+          <!-- Columnas de la tabla -->
+          <ng-container matColumnDef="idCliente">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let element">{{ element.idCliente }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef>Nombre</th>
+            <td mat-cell *matCellDef="let element">{{ element.nombre }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="apellido">
+            <th mat-header-cell *matHeaderCellDef>Apellido</th>
+            <td mat-cell *matCellDef="let element">{{ element.apellido }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button color="primary" (click)="recuperarCliente(element)" matTooltip="Recuperar cliente">
+                <mat-icon>restore</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['idCliente', 'nombre', 'apellido', 'acciones']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['idCliente', 'nombre', 'apellido', 'acciones'];"></tr>
+        </table>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close class="close-button">Cerrar</button>
+    </mat-dialog-actions>
+  </ng-template>
+
+  <!-- Contenido principal -->
+  <div class="content-wrapper"  [class.blur]="(spinnerService.isLoading$ | async)">
+    <div class="header-section">
+      
+      
+    </div>
+
+    <div class="action-buttons">
+  
+
+      <div class="search-section">
+        <mat-form-field appearance="outline" class="custom search-field">
+          <mat-icon matSuffix>search</mat-icon>
+          <mat-label>Buscar cliente</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Nombre, documento, teléfono...">
+          
+          
+        </mat-form-field>
+      </div>
+
+      <button mat-raised-button (click)="openModal()" class="action-button primary">
+        <mat-icon>person_add</mat-icon>
+        Agregar Cliente
+      </button>
+      <button mat-raised-button (click)="openRecuperarModal()" class="action-button secondary">
+        <mat-icon>restore</mat-icon>
+        Recuperar Cliente
+      </button>
+     
+    </div>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" matSort class="clients-table" >
+        <!-- Columnas de la tabla -->
+        <ng-container matColumnDef="idCliente">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+          <td mat-cell *matCellDef="let element">{{ element.idCliente }}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+          <td mat-cell *matCellDef="let element">{{ element.nombre }}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="apellido">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Apellido</th>
+          <td mat-cell *matCellDef="let element">{{ element.apellido }}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="tipoDoc">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo Doc.</th>
+          <td mat-cell *matCellDef="let element">{{ element.tipoDoc }}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="documento">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Documento</th>
+          <td mat-cell *matCellDef="let element">{{ element.documento }}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="correo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Correo</th>
+          <td mat-cell *matCellDef="let element">{{ element.correo }}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="telefono">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Teléfono</th>
+          <td mat-cell *matCellDef="let element">{{ element.telefono }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="direccion">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Dirección</th>
+          <td mat-cell *matCellDef="let element">{{ element.direccion }}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="fechaNacimiento">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nacimiento</th>
+          <td mat-cell *matCellDef="let element">{{ element.fechaNacimiento | date:'dd/MM/yyyy' }}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="fechaRegistro">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Registro</th>
+          <td mat-cell *matCellDef="let element">{{ element.fechaRegistro | date:'dd/MM/yyyy' }}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef class="actions-header">Acciones</th>
+          <td mat-cell *matCellDef="let element" class="actions-cell">
+            <button mat-icon-button (click)="verDetalles(element)" class="action-icon view" matTooltip="Ver detalles">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button (click)="abrirModalEditar(element)" class="action-icon edit" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="eliminarCliente(element)" class="action-icon delete" matTooltip="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+      
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" 
+                     showFirstLastButtons
+                     aria-label="Seleccionar página de clientes"
+                     class="custom-paginator">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

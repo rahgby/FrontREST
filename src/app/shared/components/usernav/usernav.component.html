@@ -1,0 +1,80 @@
+<div class="user-nav-container">
+
+  <div class="notificacion-wrapper">
+    <button mat-icon-button (click)="limpiarContador()" class="campana-btn">
+      <mat-icon [matBadge]="notificacionesNuevas" [matBadgeHidden]="notificacionesNuevas === 0" matBadgeColor="warn"
+        class="material-icons-outlined">notifications</mat-icon>
+    </button>
+
+    <div class="notis-dropdown shadow-lg" *ngIf="showNotis">
+      <div class="notis-header">
+        <span>Notificaciones ({{listaNotificaciones.length}})</span>
+        <div class="header-actions">
+          <button mat-button color="warn" class="btn-vaciar" (click)="vaciarNotificaciones($event)">
+            Borrar todo
+          </button>
+        </div>
+      </div>
+
+      <div class="notis-body custom-scroll">
+        <div *ngFor="let noti of listaNotificaciones; let i = index" class="noti-card"
+          [routerLink]="['/pages/orders/pedidos']" (click)="irANotificacion(noti, i)">
+
+          <div class="noti-icon-box">
+            <mat-icon>shopping_basket</mat-icon>
+          </div>
+
+          <div class="noti-content">
+            <div class="noti-title">
+              <span class="pedido-tag">#{{ noti.pedidoId || 'N/A' }}</span>
+              <span class="noti-time">Ahora</span>
+            </div>
+            <p class="noti-text">{{ noti.estado }}</p>
+            <p class="noti-text">{{ noti.mensaje }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="listaNotificaciones.length === 0" class="empty-notis">
+          <mat-icon>notifications_off</mat-icon>
+          <p>No hay notificaciones nuevas</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="propinas-wrapper" *ngIf="esMesero">
+  <div class="propinas-container" [class.revelado]="propinasRevelado">
+    <button class="propinas-btn" (click)="toggleRevelarPropinas($event)" [disabled]="cargandoPropinas">
+    <div class="propinas-total" [class.cargando]="cargandoPropinas">
+      <span class="propinas-monto" *ngIf="propinasRevelado">{{ formatearMonto(totalPropinasUsuario) }}</span>
+      <span class="propinas-monto-oculto" *ngIf="!propinasRevelado">••••</span>
+      <mat-spinner diameter="16" *ngIf="cargandoPropinas" class="propinas-spinner"></mat-spinner>
+    </div>
+    </button>
+  </div>
+</div>
+  <div class="user-avatar" (click)="toggleMenu()">
+    <mat-icon class="user-icon">account_circle</mat-icon>
+  </div>
+  <div class="user-info" (click)="toggleMenu()">
+    <div class="user-name">{{ user.nombre }} {{ user?.apellido }}</div>
+    <div class="user-role">{{user.rol}}</div>
+  </div>
+  <mat-icon class="dropdown-icon" (click)="toggleMenu()"> {{showMenu ? 'expand_less' : 'expand_more'}}</mat-icon>
+
+  <div class="user-menu" *ngIf="showMenu && (authService.isAuthenticated$ | async)">
+    <div class="user-menu-header">
+      <div class="user-avatar-mini">
+        <mat-icon>account_circle</mat-icon>
+      </div>
+      <div class="user-details-mini">
+        <span class="user-name-mini">{{ user.nombre }} {{ user?.apellido }}</span>
+        <span class="user-role-mini">{{ user.rol }}</span>
+      </div>
+    </div>
+    <button class="minimalist-btn" (click)="logout()">
+      <mat-icon class="small-icon">logout</mat-icon>
+      <span>Cerrar sesión</span>
+    </button>
+  </div>
+</div>

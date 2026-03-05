@@ -1,0 +1,136 @@
+<nav aria-label="breadcrumb" >
+    <ol class="breadcrumb custom-breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/pedidos" class="d-flex align-items-center gap-1">
+          <mat-icon class="breadcrumb-icon">home</mat-icon>
+          <span>Inicio</span>
+        </a>
+      </li>
+
+      <li class="breadcrumb-item">
+        <a routerLink="/pedidos">Pedidos</a>
+      </li>
+
+      <li class="breadcrumb-item active">
+        <a routerLink="/pages/orders">Ordenes</a>
+      </li>
+      <li class="breadcrumb-item active"  aria-current="page">
+        Cocina
+      </li>
+    </ol>
+
+
+  </nav>
+
+
+  <div class="franja-wrapper">
+  <!-- Botón del ojo -->
+  <!-- Botón del ojo -->
+<div class="control-visibilidad" *ngIf="(rolUsuario === 'Administrador' || rolUsuario === 'Cocina') && recuentoPlatos.length > 0">
+  <button (click)="toggleFranja()" class="btn-ojo" [title]="mostrarFranja ? 'Ocultar recuento' : 'Mostrar recuento'">
+    <i class="fas" [ngClass]="mostrarFranja ? 'fa-eye' : 'fa-eye-slash'"></i>
+  </button>
+</div>
+
+  <!-- Franja de recuento -->
+<div *ngIf="mostrarFranja && (rolUsuario === 'Administrador' || rolUsuario === 'Cocina') && recuentoPlatos.length > 0" class="recuento-franja">
+    <div class="recuento-container">
+      <div class="recuento-items">
+        <span *ngFor="let plato of recuentoPlatos" class="recuento-item">
+          {{ formatearRecuentoPlato(plato) }} 
+          <strong>x{{ plato.cantidadTotal || plato.CantidadTotal }}</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cocina-container">
+  <!-- Indicador de carga -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando pedidos de cocina...</p>
+  </div>
+
+  <!-- Mensaje si no hay pedidos -->
+  <div *ngIf="!isLoading && pedidos.length === 0" class="no-pedidos">
+    <div class="icono-vacio">🍽️</div>
+    <h3>No hay pedidos en cocina</h3>
+    <p>Los pedidos aparecerán aquí cuando sean enviados</p>
+  </div>
+
+  <!-- Lista de pedidos - Horizontal Scroll -->
+  <div *ngIf="!isLoading && pedidos.length > 0" class="lista-pedidos">
+    <div *ngFor="let pedido of pedidos; trackBy: trackByPedido"
+     
+         class="pedido-card"
+         [ngClass]="getTamanioPedidoClass(pedido)"
+         [class.highlight-nuevo]="pedidosResaltados.has(pedido.idPedido)"
+         (click)="marcarComoVisto(pedido.idPedido)">
+      
+      <!-- Cabecera del pedido -->
+      <div class="pedido-header">
+  <div class="pedido-info">
+    <span class="pedido-id">{{(pedido.mesa || pedido.Mesa)}} - {{(pedido.usuario || pedido.Usuario)}} - {{(pedido.estadoPedido || pedido.EstadoPedido)}}</span>
+  </div>
+  <div class="pedido-estado">
+    <span class="badge-estado">Pedido #{{(pedido.idPedido || pedido.IDPedido)}}</span>
+    <span class="pedido-hora">{{pedido.fechaRegistro || pedido.FechaRegistro | date:'HH:mm'}}</span>
+    
+  <div class="pedido-footer" *ngIf="rolUsuario === 'Administrador' || rolUsuario === 'Cocina'">
+  
+      <div class="estado-actions">
+        <div class="action-buttons">
+          <button class="pedido-check" *ngIf="(pedido.estadoPedido || pedido.EstadoPedido) === 'ENVIADO'"
+                  class="btn-action"
+                  (click)="$event.stopPropagation(); avanzarEstado(pedido)"
+                  matTooltip="Marcar como entregado">
+            <mat-icon>check</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detalles del pedido -->
+<div class="pedido-detalles" *ngIf="(pedido.detallePedido || pedido.DetallePedido) && (pedido.detallePedido || pedido.DetallePedido).length > 0; trackBy: trackByDetalle">
+  <div class="detalle-item" 
+       *ngFor="let detalle of (pedido.detallePedido || pedido.DetallePedido)"
+       [ngClass]="getDetalleClass(detalle)">
+    
+    
+    <div class="detalle-plato" style="display: flex; align-items: center; gap: 8px;">
+  <div style="flex: 1;">
+    <span class="plato-nombre"
+          [class.detalle-tachado]="detallesCompletados.has(detalle.idDetallePedido || detalle.IDDetallePedido)"
+          (click)="toggleDetalleCompletado(detalle.idDetallePedido || detalle.IDDetallePedido, $event)">
+      {{detalle.plato || detalle.Plato}}
+    </span>
+    <span class="extra-valor" *ngIf="detalle.sabor || detalle.Sabor">{{detalle.sabor || detalle.Sabor}}</span>
+    <span class="extra-valor" *ngIf="detalle.tipoPapas || detalle.TipoPapas">{{detalle.tipoPapas || detalle.TipoPapas}}</span>
+    <span class="plato-cantidad">x{{detalle.cantidad || detalle.Cantidad}}</span>
+  </div>
+
+  </div>
+
+    <!-- Adicionales -->
+    <div class="detalle-extra" *ngIf="(detalle.detallePedidoAdicional || detalle.DetallePedidoAdicional)?.length > 0">
+      <span class="extra-label">Adicionales:</span>
+      <div class="adicionales-lista">
+        <span *ngFor="let adicional of (detalle.detallePedidoAdicional || detalle.DetallePedidoAdicional)" 
+              class="adicional-item">
+          {{adicional.adicional || adicional.Adicional}} x{{adicional.cantidad || adicional.Cantidad}}
+        </span>
+      </div>
+    </div>
+
+    <!-- Comentario -->
+    <div class="detalle-comentario" *ngIf="detalle.comentario || detalle.Comentario">
+      <span class="comentario-label">Comentario:</span>
+      <span class="comentario-texto">{{detalle.comentario || detalle.Comentario}}</span>
+    </div>
+  </div>
+</div></div>
+  </div>
+</div>

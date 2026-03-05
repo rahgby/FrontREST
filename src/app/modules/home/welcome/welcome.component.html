@@ -1,0 +1,17 @@
+<div class="container mt-5 ">
+  <h1 class="welcome-title">Sistema Administrativo</h1>
+  <div class="row">
+    <div class="col-md-4 mb-4" *ngFor="let card of cards">
+      <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-dark text-white border-bottom-0">
+          <h3 class="m-0 font-weight-bold">{{ card.title }}</h3>
+        </div>
+        <img [src]="card.image" class="card-img-top rounded-1" [alt]="card.title" style="height: 200px; object-fit: cover;">
+        <div class="card-body">
+          <p class="card-text text-muted">{{ card.text }}</p>
+          <a [routerLink]="card.link" class="btn btn-outline-dark text-uppercase font-weight-bold">Ir</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

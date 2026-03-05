@@ -1,0 +1,407 @@
+/* --- Layout General y Scroll --- */
+.dialog-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #f1f5f9;
+    max-height: 100vh;
+    overflow: hidden;
+}
+
+.pedido-body {
+    padding: 16px !important;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 20px !important; /* NUEVO */
+}
+
+/* --- Header Estilo App --- */
+.dialog-header {
+    background: white;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e2e8f0;
+    flex-shrink: 0; /* NUEVO: No se encoge */
+}
+
+.mesa-badge {
+    background: #1e293b;
+    color: white;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.header-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+/* --- Cards de Items --- */
+.item-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
+}
+
+.item-card:last-child {
+    margin-bottom: 80px; /* NUEVO: Espacio extra para el último item */
+}
+
+.item-configurado { border-left: 5px solid #4338ca; }
+
+.item-main-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.item-name {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 1.1rem;
+}
+
+.item-total-price {
+    font-weight: 800;
+    color: #4338ca;
+    font-size: 1.1rem;
+}
+
+/* --- Switch y Selectores --- */
+.scale-sm {
+    transform: scale(0.85);
+    transform-origin: left;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 15px 0;
+}
+
+.custom-input-group label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.modern-select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234338ca'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") no-repeat right 10px center;
+    background-size: 16px;
+    color: #1e293b;
+    font-weight: 600;
+    outline: none;
+    appearance: none;
+}
+
+/* --- Sección de Extras --- */
+.extras-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0 12px;
+}
+
+.extras-header hr {
+    flex: 1;
+    border: 0;
+    border-top: 1px dashed #cbd5e1;
+}
+
+.extras-header span {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 1px;
+}
+
+.extra-edit-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.extra-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mini-switch {
+    display: flex;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 2px;
+}
+
+.mini-switch button {
+    border: none;
+    background: white;
+    color: #4338ca;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    font-weight: 800;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.mini-switch span {
+    padding: 0 8px;
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.85rem;
+}
+
+.sub-icon {
+    font-size: 18px;
+    color: #cbd5e1;
+}
+
+.ex-name {
+    font-weight: 600;
+    color: #475569;
+}
+
+/* --- Notas de Cocina y Cliente --- */
+.item-notes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8fafc;
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+
+.item-notes mat-icon,
+.cliente-box mat-icon {
+    color: #94a3b8;
+}
+
+.item-notes input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    outline: none;
+    color: #1e293b;
+    font-size: 0.9rem;
+}
+
+.cliente-box {
+    display: flex;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+}
+
+.cliente-box:focus-within {
+    border-color: #4338ca;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.1);
+}
+
+.cliente-box mat-icon {
+    margin-right: 10px;
+    font-size: 22px;
+}
+
+.input-cliente {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 0.95rem;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.input-cliente::placeholder {
+    color: #cbd5e1;
+    font-weight: 400;
+}
+
+/* --- Footer Sticky de Acción --- */
+.footer-sticky {
+    padding: 20px;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    flex-shrink: 0; /* NUEVO: No se encoge */
+    position: sticky; /* NUEVO */
+    bottom: 0; /* NUEVO */
+    z-index: 10; /* NUEVO */
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05); /* NUEVO */
+}
+
+.confirm-full-btn {
+    width: 100%;
+    height: 56px;
+    background: linear-gradient(135deg, #00b894 0%, #00a8ff 100%);
+    border: none;
+    border-radius: 16px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.confirm-full-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 184, 148, 0.4);
+}
+
+.confirm-full-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.btn-price {
+    background: rgba(0, 0, 0, 0.15);
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+/* ============================================
+   RESPONSIVE MÓVIL
+   ============================================ */
+@media (max-width: 768px) {
+    .dialog-container {
+        height: 80vh;
+        max-height: 80vh;
+    }
+
+    .pedido-body {
+        padding: 12px !important;
+        padding-bottom: 20px !important;
+    }
+
+    .item-card {
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+
+    .item-card:last-child {
+        margin-bottom: 100px; /* MÁS ESPACIO en móvil */
+    }
+
+    .footer-sticky {
+        padding: 16px;
+        padding-bottom: 20px; /* NUEVO: Más padding abajo en móvil */
+    }
+
+    .confirm-full-btn {
+        height: 60px; /* NUEVO: Más alto en móvil */
+    }
+
+    .btn-text {
+        font-size: 0.9rem;
+    }
+
+    .btn-price {
+        font-size: 1rem;
+    }
+
+    .options-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dialog-header {
+        padding: 12px;
+    }
+
+    .header-title {
+        font-size: 1rem;
+    }
+
+    .mesa-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+    }
+
+    .item-card {
+        padding: 14px;
+    }
+
+    .item-name {
+        font-size: 1rem;
+    }
+
+    .item-total-price {
+        font-size: 1rem;
+    }
+
+    .footer-sticky {
+        padding: 12px;
+        padding-bottom: 24px; /* NUEVO: Aún más padding en pantallas muy pequeñas */
+    }
+
+    .confirm-full-btn {
+        height: 64px; /* NUEVO: Más alto en móviles pequeños */
+        padding: 0 16px;
+    }
+
+    .btn-text {
+        font-size: 0.85rem;
+    }
+
+    .btn-text mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Fix para iOS Safari */
+@supports (-webkit-touch-callout: none) {
+    .footer-sticky {
+        padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    }
+}
